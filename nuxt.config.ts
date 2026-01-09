@@ -20,6 +20,26 @@ export default defineNuxtConfig({
     "/": { prerender: true },
   },
 
+  hooks: {
+    "pages:extend"(pages) {
+      const applyLayout = (pageList) => {
+        for (const page of pageList) {
+          if (page.path?.startsWith("/auth")) {
+            page.meta = { ...(page.meta || {}), layout: "auth" };
+          } else {
+            page.meta = { ...(page.meta || {}), layout: "default" };
+          }
+
+          if (page.children?.length) {
+            applyLayout(page.children);
+          }
+        }
+      };
+
+      applyLayout(pages);
+    },
+  },
+
   compatibilityDate: "2025-01-15",
 
   eslint: {

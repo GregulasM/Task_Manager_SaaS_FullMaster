@@ -1,4 +1,4 @@
 <template><div></div></template>
 <script setup lang="ts">
-definePageMeta({ layout: "default" });
+definePageMeta({ layout: "auth" })
 </script>
