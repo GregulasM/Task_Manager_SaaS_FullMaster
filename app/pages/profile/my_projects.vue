@@ -164,6 +164,15 @@
                 <UButton
                   variant="outline"
                   class="rounded-full border-sky-200 text-slate-900"
+                  icon="i-heroicons-user-group"
+                  leading
+                  @click="toggleMembers(project.id)"
+                >
+                  Список участников
+                </UButton>
+                <UButton
+                  variant="outline"
+                  class="rounded-full border-sky-200 text-slate-900"
                   icon="i-heroicons-pencil-square"
                   leading
                   @click="startEdit(project)"
@@ -186,6 +195,15 @@
                 <UButton
                   variant="outline"
                   class="rounded-full border-sky-200 text-slate-900"
+                  icon="i-heroicons-user-group"
+                  leading
+                  @click="toggleMembers(project.id)"
+                >
+                  Список участников
+                </UButton>
+                <UButton
+                  variant="outline"
+                  class="rounded-full border-sky-200 text-slate-900"
                   icon="i-heroicons-arrow-left-on-rectangle"
                   leading
                   :loading="leaveLoadingId === project.id"
@@ -197,6 +215,60 @@
               </template>
             </div>
           </div>
+
+          <UCollapsible
+            v-if="openMembersId === project.id"
+            :open="openMembersId === project.id"
+          >
+            <div
+              class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 p-3"
+            >
+              <p class="text-sm text-slate-700">Участники:</p>
+              <div
+                v-if="membersLoadingId === project.id"
+                class="text-xs text-slate-600"
+              >
+                Загрузка участников...
+              </div>
+              <div
+                v-else-if="membersError[project.id]"
+                class="text-xs text-rose-600"
+              >
+                {{ membersError[project.id] }}
+              </div>
+              <div v-else class="h-12 space-y-1 overflow-y-auto pr-1">
+                <div
+                  v-if="
+                    hasMembersLoaded(project.id) &&
+                    !membersForProject(project.id).length
+                  "
+                  class="text-xs text-slate-600"
+                >
+                  Пока участников нет.
+                </div>
+                <div
+                  v-for="member in membersForProject(project.id)"
+                  :key="member.id"
+                  class="flex items-center justify-between text-xs text-slate-700"
+                >
+                  <div class="min-w-0">
+                    <span class="truncate font-semibold text-slate-900">
+                      {{ member.name }}
+                    </span>
+                    <span v-if="member.email" class="truncate text-slate-500">
+                      · {{ member.email }}
+                    </span>
+                  </div>
+                  <UBadge
+                    v-if="member.role === 'OWNER'"
+                    class="rounded-full border border-sky-200 bg-white text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
+                  >
+                    Owner
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+          </UCollapsible>
 
           <div
             v-if="inviteProjectId === project.id"
@@ -277,6 +349,24 @@ type ProjectApi = {
   } | null;
 };
 
+type MemberItem = {
+  id: string;
+  name: string;
+  email: string;
+  role: "OWNER" | "MEMBER";
+};
+
+type ProjectMembersResponse = {
+  members: Array<{
+    role: "OWNER" | "MEMBER";
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }>;
+};
+
 const projects = ref<ProjectItem[]>([]);
 
 const formMode = ref<FormMode>(null);
@@ -291,6 +381,10 @@ const inviteEmail = ref("");
 const inviteLoading = ref(false);
 const inviteError = ref("");
 const inviteSuccess = ref("");
+const openMembersId = ref<string | null>(null);
+const membersLoadingId = ref<string | null>(null);
+const membersByProject = ref<Record<string, MemberItem[]>>({});
+const membersError = ref<Record<string, string>>({});
 
 const form = reactive({
   name: "",
@@ -317,6 +411,21 @@ const editingName = computed(() => {
 const canManage = (project: ProjectItem) => project.role === "OWNER";
 const ownerLabel = (project: ProjectItem) =>
   project.ownerName || project.ownerEmail || "Неизвестно";
+const membersForProject = (projectId: string) =>
+  membersByProject.value[projectId] ?? [];
+const hasMembersLoaded = (projectId: string) =>
+  Object.prototype.hasOwnProperty.call(membersByProject.value, projectId);
+
+const clearMembersState = (projectId: string) => {
+  if (openMembersId.value === projectId) openMembersId.value = null;
+  if (membersLoadingId.value === projectId) membersLoadingId.value = null;
+
+  const { [projectId]: _removed, ...rest } = membersByProject.value;
+  membersByProject.value = rest;
+
+  const { [projectId]: _error, ...restErrors } = membersError.value;
+  membersError.value = restErrors;
+};
 
 const getErrorMessage = (err: unknown, fallback: string) => {
   if (typeof err === "string") return err;
@@ -415,6 +524,7 @@ const removeProject = async (id: string) => {
     if (inviteProjectId.value === id) {
       cancelInvite();
     }
+    clearMembersState(id);
   } catch (err) {
     errorMessage.value = getErrorMessage(err, "Не удалось удалить проект.");
   } finally {
@@ -433,11 +543,58 @@ const leaveProject = async (id: string) => {
       query: { id, leave: "1" },
     });
     projects.value = projects.value.filter((project) => project.id !== id);
+    clearMembersState(id);
   } catch (err) {
     errorMessage.value = getErrorMessage(err, "Не удалось выйти из проекта.");
   } finally {
     leaveLoadingId.value = null;
   }
+};
+
+const loadMembers = async (projectId: string) => {
+  if (membersByProject.value[projectId]) return;
+  membersLoadingId.value = projectId;
+  membersError.value = {
+    ...membersError.value,
+    [projectId]: "",
+  };
+
+  try {
+    const result = await $fetch<ProjectMembersResponse>("/api/project", {
+      query: { id: projectId },
+    });
+
+    membersByProject.value = {
+      ...membersByProject.value,
+      [projectId]: result.members.map((member) => ({
+        id: member.user.id,
+        name: member.user.name || member.user.email,
+        email: member.user.email,
+        role: member.role,
+      })),
+    };
+  } catch (err) {
+    membersByProject.value = {
+      ...membersByProject.value,
+      [projectId]: [],
+    };
+    membersError.value = {
+      ...membersError.value,
+      [projectId]: getErrorMessage(err, "Не удалось загрузить участников."),
+    };
+  } finally {
+    membersLoadingId.value = null;
+  }
+};
+
+const toggleMembers = async (projectId: string) => {
+  if (openMembersId.value === projectId) {
+    openMembersId.value = null;
+    return;
+  }
+
+  openMembersId.value = projectId;
+  await loadMembers(projectId);
 };
 
 const toggleInvite = (projectId: string) => {

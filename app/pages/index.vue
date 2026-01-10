@@ -167,12 +167,60 @@
             <p class="text-sm text-slate-700">
               {{ selectedProject.description }}
             </p>
-            <div
-              class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+
+            <UCollapsible
+              v-if="openMembersId === selectedProject.id"
+              :open="openMembersId === selectedProject.id"
             >
-              Здесь будет полноценная карточка проекта и статистика после
-              подключения API.
-            </div>
+              <div
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3"
+              >
+                <p class="text-sm text-slate-700">Участники:</p>
+                <div
+                  v-if="membersLoadingId === selectedProject.id"
+                  class="text-xs text-slate-600"
+                >
+                  Загрузка участников...
+                </div>
+                <div
+                  v-else-if="membersError[selectedProject.id]"
+                  class="text-xs text-rose-600"
+                >
+                  {{ membersError[selectedProject.id] }}
+                </div>
+                <div v-else class="h-12 space-y-1 overflow-y-auto pr-1">
+                  <div
+                    v-if="
+                      hasMembersLoaded(selectedProject.id) &&
+                      !membersForProject(selectedProject.id).length
+                    "
+                    class="text-xs text-slate-600"
+                  >
+                    Пока участников нет.
+                  </div>
+                  <div
+                    v-for="member in membersForProject(selectedProject.id)"
+                    :key="member.id"
+                    class="flex items-center justify-between text-xs text-slate-700"
+                  >
+                    <div class="min-w-0">
+                      <span class="truncate font-semibold text-slate-900">
+                        {{ member.name }}
+                      </span>
+                      <span v-if="member.email" class="truncate text-slate-500">
+                        · {{ member.email }}
+                      </span>
+                    </div>
+                    <UBadge
+                      v-if="member.role === 'OWNER'"
+                      class="rounded-full border border-sky-200 bg-white text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
+                    >
+                      Owner
+                    </UBadge>
+                  </div>
+                </div>
+              </div>
+            </UCollapsible>
           </div>
 
           <template #footer>
@@ -186,6 +234,16 @@
                 @click="openBoard"
               >
                 Открыть
+              </UButton>
+              <UButton
+                v-if="selectedGroup === 'my'"
+                variant="outline"
+                class="rounded-full border-sky-200 text-slate-900"
+                icon="i-heroicons-user-group"
+                leading
+                @click="toggleMembers(selectedProject.id)"
+              >
+                Список участников
               </UButton>
               <UButton
                 v-if="selectedGroup === 'my'"
@@ -332,6 +390,24 @@ type ProjectApi = {
   role?: "OWNER" | "MEMBER" | null;
 };
 
+type MemberItem = {
+  id: string;
+  name: string;
+  email: string;
+  role: "OWNER" | "MEMBER";
+};
+
+type ProjectMembersResponse = {
+  members: Array<{
+    role: "OWNER" | "MEMBER";
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }>;
+};
+
 const myProjects = ref<ProjectCard[]>([]);
 const otherProjects = ref<ProjectCard[]>([]);
 const loading = ref(false);
@@ -357,11 +433,18 @@ const selectedGroup = ref<ProjectGroup>("my");
 const isBoardOpen = ref(false);
 const actionLoading = ref(false);
 const actionType = ref<"request" | "leave" | null>(null);
+const openMembersId = ref<string | null>(null);
+const membersLoadingId = ref<string | null>(null);
+const membersByProject = ref<Record<string, MemberItem[]>>({});
+const membersError = ref<Record<string, string>>({});
 
 const selectProject = (project: ProjectCard, group: ProjectGroup) => {
   selectedProject.value = project;
   selectedGroup.value = group;
   isBoardOpen.value = false;
+  if (openMembersId.value && openMembersId.value !== project.id) {
+    openMembersId.value = null;
+  }
 };
 
 const projectButtonClass = (id: string) =>
@@ -401,6 +484,22 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 const isActionLoading = (type: "request" | "leave") =>
   actionLoading.value && actionType.value === type;
 
+const membersForProject = (projectId: string) =>
+  membersByProject.value[projectId] ?? [];
+const hasMembersLoaded = (projectId: string) =>
+  Object.prototype.hasOwnProperty.call(membersByProject.value, projectId);
+
+const clearMembersState = (projectId: string) => {
+  if (openMembersId.value === projectId) openMembersId.value = null;
+  if (membersLoadingId.value === projectId) membersLoadingId.value = null;
+
+  const { [projectId]: _removed, ...rest } = membersByProject.value;
+  membersByProject.value = rest;
+
+  const { [projectId]: _error, ...restErrors } = membersError.value;
+  membersError.value = restErrors;
+};
+
 const syncSelection = () => {
   const currentId = selectedProject.value?.id;
   let nextProject: ProjectCard | null = null;
@@ -435,6 +534,9 @@ const syncSelection = () => {
   selectedProject.value = nextProject;
   selectedGroup.value = nextGroup;
   if (!nextProject) isBoardOpen.value = false;
+  if (!nextProject || openMembersId.value !== nextProject.id) {
+    openMembersId.value = null;
+  }
 };
 
 const loadProjects = async () => {
@@ -506,6 +608,7 @@ const leaveProject = async (projectId: string) => {
       method: "DELETE",
       query: { id: projectId, leave: "1" },
     });
+    clearMembersState(projectId);
     await loadProjects();
   } catch (err) {
     errorMessage.value = getErrorMessage(
@@ -516,6 +619,52 @@ const leaveProject = async (projectId: string) => {
     actionLoading.value = false;
     actionType.value = null;
   }
+};
+
+const loadMembers = async (projectId: string) => {
+  if (membersByProject.value[projectId]) return;
+  membersLoadingId.value = projectId;
+  membersError.value = {
+    ...membersError.value,
+    [projectId]: "",
+  };
+
+  try {
+    const result = await $fetch<ProjectMembersResponse>("/api/project", {
+      query: { id: projectId },
+    });
+
+    membersByProject.value = {
+      ...membersByProject.value,
+      [projectId]: result.members.map((member) => ({
+        id: member.user.id,
+        name: member.user.name || member.user.email,
+        email: member.user.email,
+        role: member.role,
+      })),
+    };
+  } catch (err) {
+    membersByProject.value = {
+      ...membersByProject.value,
+      [projectId]: [],
+    };
+    membersError.value = {
+      ...membersError.value,
+      [projectId]: getErrorMessage(err, "Не удалось загрузить участников."),
+    };
+  } finally {
+    membersLoadingId.value = null;
+  }
+};
+
+const toggleMembers = async (projectId: string) => {
+  if (openMembersId.value === projectId) {
+    openMembersId.value = null;
+    return;
+  }
+
+  openMembersId.value = projectId;
+  await loadMembers(projectId);
 };
 
 const boardColumns = [
