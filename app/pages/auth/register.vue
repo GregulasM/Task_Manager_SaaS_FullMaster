@@ -182,6 +182,7 @@
 </template>
 
 <script setup lang="ts">
+import { humanizeError } from "~/utils/human-error";
 definePageMeta({ layout: "auth" });
 
 useHead({
@@ -242,11 +243,8 @@ const fieldUi = {
 const tabClass = (active: boolean) =>
   active ? "auth-tab--active" : "auth-tab--idle";
 
-const getErrorMessage = (err: unknown, fallback: string) => {
-  if (typeof err === "string") return err;
-  const typed = err as { data?: { statusMessage?: string }; message?: string };
-  return typed?.data?.statusMessage || typed?.message || fallback;
-};
+const getErrorMessage = (err: unknown, fallback: string) =>
+  humanizeError(err, fallback);
 
 const submit = async () => {
   error.value = "";

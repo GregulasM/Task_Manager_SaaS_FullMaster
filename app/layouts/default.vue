@@ -151,7 +151,7 @@
                   Главная
                 </UButton>
                 <UButton
-                  to="/analytics"
+                  to="profile/analytics"
                   variant="outline"
                   class="rounded-full flex-1 border-sky-200 bg-white text-slate-900"
                   :class="navClass(isAnalytics)"

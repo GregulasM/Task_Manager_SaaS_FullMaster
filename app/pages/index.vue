@@ -12,9 +12,10 @@
                 <h2 class="text-lg font-semibold text-slate-900">Проекты</h2>
               </div>
               <UBadge
+                v-if="loading"
                 class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
               >
-                {{ loading ? "Загрузка" : "API" }}
+                Загрузка
               </UBadge>
             </div>
           </template>
@@ -154,11 +155,6 @@
                 >
                   Горящие: {{ selectedProject.hotTasksCount }} шт.
                 </UBadge>
-                <UBadge
-                  class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
-                >
-                  Заглушка
-                </UBadge>
               </div>
             </div>
           </template>
@@ -167,6 +163,13 @@
             <p class="text-sm text-slate-700">
               {{ selectedProject.description }}
             </p>
+            <UAlert
+              v-if="accessError"
+              icon="i-heroicons-exclamation-circle"
+              title="Нет доступа"
+              :description="accessError"
+              class="border border-rose-200 bg-rose-50 text-slate-900"
+            />
 
             <UCollapsible
               v-if="openMembersId === selectedProject.id"
@@ -339,9 +342,10 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <UBadge
+                    v-if="createLoading"
                     class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
                   >
-                    {{ createLoading ? "Создаем" : "API" }}
+                    Создаем
                   </UBadge>
                   <UButton
                     class="rounded-full bg-sky-200 text-slate-900"
@@ -439,7 +443,7 @@
               <div
                 v-for="column in boardColumns"
                 :key="column.id"
-                class="flex min-h-[420px] w-80 shrink-0 flex-col rounded-[28px] border border-sky-200 bg-white/80 p-4"
+                class="flex min-h-[420px] max-h-[800px] overflow-y-scroll w-80 shrink-0 flex-col rounded-[28px] border border-sky-200 bg-white/80 p-4"
                 @dragover.prevent="handleDragOver(column.id, 'end')"
                 @drop.prevent="handleDrop(column.id, 'end')"
               >
@@ -496,10 +500,19 @@
                         </div>
                         <p
                           v-else
-                          class="cursor-text text-sm font-semibold text-slate-900"
+                          class="flex cursor-text items-center gap-1 text-sm font-semibold text-slate-900"
                           @dblclick="startEditing(task, 'title')"
                         >
-                          {{ task.title }}
+                          <span class="truncate">{{ task.title }}</span>
+                          <UIcon
+                            v-if="taskAlertMeta(task)"
+                            name="i-heroicons-exclamation-triangle-solid"
+                            :class="[
+                              'h-4 w-4 shrink-0',
+                              taskAlertMeta(task)?.class,
+                            ]"
+                            :title="taskAlertMeta(task)?.title"
+                          />
                         </p>
                       </div>
                       <UButton
@@ -619,7 +632,7 @@
                       </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2 pt-4">
                       <UBadge
                         class="rounded-full border text-[10px] font-semibold uppercase tracking-[0.2em]"
                         :class="priorityBadgeClass(task.priority)"
@@ -663,6 +676,7 @@
 </template>
 
 <script setup lang="ts">
+import { humanizeError } from "~/utils/human-error";
 definePageMeta({ layout: "default" });
 
 type ProjectCard = {
@@ -760,6 +774,7 @@ const myProjects = ref<ProjectCard[]>([]);
 const otherProjects = ref<ProjectCard[]>([]);
 const loading = ref(false);
 const errorMessage = ref("");
+const accessError = ref("");
 const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
 
 const accordionItems = [
@@ -821,6 +836,7 @@ const selectProject = (project: ProjectCard, group: ProjectGroup) => {
   selectedGroup.value = group;
   isBoardOpen.value = false;
   boardError.value = "";
+  accessError.value = "";
   boardStats.value = null;
   if (openMembersId.value && openMembersId.value !== project.id) {
     openMembersId.value = null;
@@ -833,6 +849,14 @@ const projectButtonClass = (id: string) =>
     : "hover:bg-sky-50";
 
 const openBoard = () => {
+  if (!selectedProject.value) return;
+  boardError.value = "";
+  if (!selectedProject.value.role) {
+    accessError.value =
+      "Вы не состоите в этом проекте. Запросите доступ у владельца.";
+    return;
+  }
+  accessError.value = "";
   isBoardOpen.value = true;
   boardError.value = "";
   void ensureMembersLoaded();
@@ -890,11 +914,8 @@ const mapProject = (project: ProjectApi): ProjectCard => ({
   role: project.role ?? null,
 });
 
-const getErrorMessage = (err: unknown, fallback: string) => {
-  if (typeof err === "string") return err;
-  const typed = err as { data?: { statusMessage?: string }; message?: string };
-  return typed?.data?.statusMessage || typed?.message || fallback;
-};
+const getErrorMessage = (err: unknown, fallback: string) =>
+  humanizeError(err, fallback);
 
 const triggerHeaderRefresh = () => {
   headerRefreshToken.value += 1;
@@ -1222,6 +1243,15 @@ const priorityStripeClass = (task: TaskItem) => {
   }
 };
 
+const taskAlertMeta = (task: TaskItem) => {
+  if (task.isOverdue) return { class: "text-rose-600", title: "Просрочено" };
+  if (task.priority === "URGENT")
+    return { class: "text-rose-500", title: "Приоритет: срочно" };
+  if (task.priority === "HIGH")
+    return { class: "text-orange-500", title: "Приоритет: высокий" };
+  return null;
+};
+
 const taskCardClass = (task: TaskItem, status: TaskStatus, index: number) => {
   const classes: string[] = [];
 
@@ -1350,6 +1380,7 @@ const syncProjectCounts = (projectId: string) => {
 const loadBoard = async (projectId: string) => {
   boardLoading.value = true;
   boardError.value = "";
+  accessError.value = "";
 
   try {
     const result = await $fetch<TaskBoardResponse>("/api/task", {
@@ -1369,7 +1400,28 @@ const loadBoard = async (projectId: string) => {
     recomputeBoardStats();
     syncProjectCounts(projectId);
   } catch (err) {
-    boardError.value = getErrorMessage(err, "Не удалось загрузить задачи.");
+    const typed = err as {
+      statusCode?: number;
+      data?: { statusCode?: number; statusMessage?: string };
+      message?: string;
+    };
+    const status = typed?.data?.statusCode ?? typed?.statusCode;
+    const rawMessage = typed?.data?.statusMessage || typed?.message;
+
+    if (
+      status === 401 ||
+      status === 403 ||
+      rawMessage === "Forbidden" ||
+      rawMessage === "Unauthorized"
+    ) {
+      accessError.value =
+        status === 401
+          ? humanizeError(err, "Сначала войдите в систему.")
+          : "Вы не состоите в этом проекте. Запросите доступ у владельца.";
+      isBoardOpen.value = false;
+    } else {
+      boardError.value = getErrorMessage(err, "Не удалось загрузить задачи.");
+    }
     tasksByStatus.value = {
       TODO: [],
       IN_PROGRESS: [],

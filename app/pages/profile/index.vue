@@ -19,9 +19,10 @@
             {{ invitations.length }} шт.
           </UBadge>
           <UBadge
+            v-if="loading"
             class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
           >
-            {{ loading ? "Загрузка" : "API" }}
+            Загрузка
           </UBadge>
         </div>
       </div>
@@ -134,6 +135,7 @@
 </template>
 
 <script setup lang="ts">
+import { humanizeError } from "~/utils/human-error";
 definePageMeta({ layout: "default" });
 
 type InvitationItem = {
@@ -174,11 +176,8 @@ const mapInvitation = (invite: InvitationApi): InvitationItem => ({
   inviterEmail: invite.invitedBy?.email?.trim() || "",
 });
 
-const getErrorMessage = (err: unknown, fallback: string) => {
-  if (typeof err === "string") return err;
-  const typed = err as { data?: { statusMessage?: string }; message?: string };
-  return typed?.data?.statusMessage || typed?.message || fallback;
-};
+const getErrorMessage = (err: unknown, fallback: string) =>
+  humanizeError(err, fallback);
 
 const loadInvitations = async () => {
   loading.value = true;

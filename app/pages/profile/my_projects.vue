@@ -19,9 +19,10 @@
             {{ projects.length }} проектов
           </UBadge>
           <UBadge
+            v-if="listLoading"
             class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
           >
-            {{ listLoading ? "Загрузка" : "API" }}
+            Загрузка
           </UBadge>
           <UButton
             class="rounded-full bg-sky-200 text-slate-900"
@@ -249,7 +250,7 @@
                 <div
                   v-for="member in membersForProject(project.id)"
                   :key="member.id"
-                  class="flex items-center justify-between text-xs text-slate-700"
+                  class="flex items-center justify-between gap-2 text-xs text-slate-700"
                 >
                   <div class="min-w-0">
                     <span class="truncate font-semibold text-slate-900">
@@ -259,12 +260,26 @@
                       · {{ member.email }}
                     </span>
                   </div>
-                  <UBadge
-                    v-if="member.role === 'OWNER'"
-                    class="rounded-full border border-sky-200 bg-white text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
-                  >
-                    Owner
-                  </UBadge>
+                  <div class="flex items-center gap-2">
+                    <UBadge
+                      v-if="member.role === 'OWNER'"
+                      class="rounded-full border border-sky-200 bg-white text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
+                    >
+                      Owner
+                    </UBadge>
+                    <UButton
+                      v-if="canRemoveMember(project, member)"
+                      variant="outline"
+                      size="xs"
+                      class="rounded-full border-sky-200 text-slate-900"
+                      icon="i-heroicons-user-minus"
+                      :loading="isRemovingMember(project.id, member.id)"
+                      :disabled="isRemovingMember(project.id, member.id)"
+                      @click="removeMember(project.id, member.id)"
+                    >
+                      Исключить
+                    </UButton>
+                  </div>
                 </div>
               </div>
             </div>
@@ -325,6 +340,7 @@
 </template>
 
 <script setup lang="ts">
+import { humanizeError } from "~/utils/human-error";
 definePageMeta({ layout: "default" });
 
 type ProjectItem = {
@@ -367,6 +383,12 @@ type ProjectMembersResponse = {
   }>;
 };
 
+type UserPublic = {
+  id: string;
+  name: string;
+  email: string;
+};
+
 const projects = ref<ProjectItem[]>([]);
 
 const formMode = ref<FormMode>(null);
@@ -375,6 +397,7 @@ const listLoading = ref(false);
 const formLoading = ref(false);
 const deleteLoadingId = ref<string | null>(null);
 const leaveLoadingId = ref<string | null>(null);
+const removeMemberLoadingId = ref<string | null>(null);
 const errorMessage = ref("");
 const inviteProjectId = ref<string | null>(null);
 const inviteEmail = ref("");
@@ -385,6 +408,7 @@ const openMembersId = ref<string | null>(null);
 const membersLoadingId = ref<string | null>(null);
 const membersByProject = ref<Record<string, MemberItem[]>>({});
 const membersError = ref<Record<string, string>>({});
+const currentUserId = ref<string | null>(null);
 
 const form = reactive({
   name: "",
@@ -409,6 +433,10 @@ const editingName = computed(() => {
 });
 
 const canManage = (project: ProjectItem) => project.role === "OWNER";
+const canRemoveMember = (project: ProjectItem, member: MemberItem) =>
+  canManage(project) &&
+  member.role !== "OWNER" &&
+  member.id !== currentUserId.value;
 const ownerLabel = (project: ProjectItem) =>
   project.ownerName || project.ownerEmail || "Неизвестно";
 const membersForProject = (projectId: string) =>
@@ -427,11 +455,8 @@ const clearMembersState = (projectId: string) => {
   membersError.value = restErrors;
 };
 
-const getErrorMessage = (err: unknown, fallback: string) => {
-  if (typeof err === "string") return err;
-  const typed = err as { data?: { statusMessage?: string }; message?: string };
-  return typed?.data?.statusMessage || typed?.message || fallback;
-};
+const getErrorMessage = (err: unknown, fallback: string) =>
+  humanizeError(err, fallback);
 
 const resetForm = () => {
   form.name = "";
@@ -597,6 +622,37 @@ const toggleMembers = async (projectId: string) => {
   await loadMembers(projectId);
 };
 
+const isRemovingMember = (projectId: string, memberId: string) =>
+  removeMemberLoadingId.value === `${projectId}:${memberId}`;
+
+const removeMember = async (projectId: string, memberId: string) => {
+  if (removeMemberLoadingId.value) return;
+  if (!projectId || !memberId) return;
+
+  removeMemberLoadingId.value = `${projectId}:${memberId}`;
+  membersError.value = { ...membersError.value, [projectId]: "" };
+
+  try {
+    await $fetch("/api/project", {
+      method: "POST",
+      body: { action: "remove_member", projectId, memberUserId: memberId },
+    });
+
+    const members = membersByProject.value[projectId] ?? [];
+    membersByProject.value = {
+      ...membersByProject.value,
+      [projectId]: members.filter((member) => member.id !== memberId),
+    };
+  } catch (err) {
+    membersError.value = {
+      ...membersError.value,
+      [projectId]: getErrorMessage(err, "Не удалось исключить участника."),
+    };
+  } finally {
+    removeMemberLoadingId.value = null;
+  }
+};
+
 const toggleInvite = (projectId: string) => {
   if (inviteProjectId.value === projectId) {
     cancelInvite();
@@ -672,7 +728,19 @@ const loadProjects = async () => {
   }
 };
 
+const loadCurrentUser = async () => {
+  try {
+    const me = await $fetch<UserPublic>("/api/user", {
+      query: { me: "1" },
+    });
+    currentUserId.value = me.id;
+  } catch {
+    currentUserId.value = null;
+  }
+};
+
 onMounted(() => {
   loadProjects();
+  loadCurrentUser();
 });
 </script>
