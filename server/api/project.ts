@@ -3,6 +3,7 @@ import { prisma } from "../../app/lib/prisma";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 const AUTH_COOKIE = "fm_token";
+const HOT_PRIORITIES = ["HIGH", "URGENT"] as const;
 
 type ProjectPostBody = {
   action?:
@@ -240,13 +241,12 @@ async function attachTaskCounts(projects: Array<{ id: string }>) {
     where: { projectId: { in: ids } },
   });
 
-  const now = new Date();
   const hotsRaw = await prisma.task.groupBy({
     by: ["projectId"],
     _count: { _all: true },
     where: {
       projectId: { in: ids },
-      dueDate: { lt: now },
+      priority: { in: [...HOT_PRIORITIES] },
       status: { not: "DONE" },
     },
   });
@@ -498,7 +498,7 @@ export default defineEventHandler(async (event) => {
         prisma.task.count({
           where: {
             projectId: id,
-            dueDate: { lt: new Date() },
+            priority: { in: [...HOT_PRIORITIES] },
             status: { not: "DONE" },
           },
         }),

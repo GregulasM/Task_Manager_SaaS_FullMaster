@@ -11,6 +11,7 @@ const TASK_STATUSES: TaskStatus[] = ["TODO", "IN_PROGRESS", "REVIEW", "DONE"];
 const TASK_PRIORITIES: TaskPriority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 const TASK_STATUS_SET = new Set<TaskStatus>(TASK_STATUSES);
 const TASK_PRIORITY_SET = new Set<TaskPriority>(TASK_PRIORITIES);
+const HOT_PRIORITIES: TaskPriority[] = ["HIGH", "URGENT"];
 
 type CreateTaskBody = {
   action?: "create" | "move" | "bulk_reorder" | "delete";
@@ -359,7 +360,7 @@ export default defineEventHandler(async (event) => {
     if (action === "stats") {
       const now = new Date();
 
-      const [byStatus, overdue] = await Promise.all([
+      const [byStatus, overdue, hot] = await Promise.all([
         prisma.task.groupBy({
           by: ["status"],
           where: { projectId },
@@ -367,6 +368,13 @@ export default defineEventHandler(async (event) => {
         }),
         prisma.task.count({
           where: { projectId, dueDate: { lt: now }, status: { not: "DONE" } },
+        }),
+        prisma.task.count({
+          where: {
+            projectId,
+            priority: { in: HOT_PRIORITIES },
+            status: { not: "DONE" },
+          },
         }),
       ]);
 
@@ -381,7 +389,7 @@ export default defineEventHandler(async (event) => {
         counts[row.status as TaskStatus] = row._count._all;
       }
 
-      return { projectId, byStatus: counts, overdue };
+      return { projectId, byStatus: counts, hot, overdue };
     }
 
     // list (filtered)
@@ -449,9 +457,16 @@ export default defineEventHandler(async (event) => {
       columns[t.status as TaskStatus].push(mapTask(t));
 
     const now = new Date();
-    const [overdue, byStatusRaw] = await Promise.all([
+    const [overdue, hot, byStatusRaw] = await Promise.all([
       prisma.task.count({
         where: { projectId, dueDate: { lt: now }, status: { not: "DONE" } },
+      }),
+      prisma.task.count({
+        where: {
+          projectId,
+          priority: { in: HOT_PRIORITIES },
+          status: { not: "DONE" },
+        },
       }),
       prisma.task.groupBy({
         by: ["status"],
@@ -471,7 +486,7 @@ export default defineEventHandler(async (event) => {
       byStatus[row.status as TaskStatus] = row._count._all;
     }
 
-    return { projectId, columns, stats: { byStatus, overdue } };
+    return { projectId, columns, stats: { byStatus, hot, overdue } };
   }
 
   // ==========================

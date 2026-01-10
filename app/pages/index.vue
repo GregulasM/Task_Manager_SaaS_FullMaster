@@ -298,10 +298,10 @@
                   Задач: {{ boardTasksTotal }}
                 </UBadge>
                 <UBadge
-                  :class="hotBadgeClass(boardOverdueTotal)"
+                  :class="hotBadgeClass(boardHotTotal)"
                   class="rounded-full border text-xs font-semibold"
                 >
-                  Горящие: {{ boardOverdueTotal }}
+                  Горящие: {{ boardHotTotal }}
                 </UBadge>
                 <UButton
                   variant="outline"
@@ -740,7 +740,8 @@ type TaskBoardResponse = {
   columns: Record<TaskStatus, TaskItem[]>;
   stats: {
     byStatus: Record<TaskStatus, number>;
-    overdue: number;
+    hot: number;
+    overdue?: number;
   };
 };
 
@@ -759,6 +760,7 @@ const myProjects = ref<ProjectCard[]>([]);
 const otherProjects = ref<ProjectCard[]>([]);
 const loading = ref(false);
 const errorMessage = ref("");
+const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
 
 const accordionItems = [
   {
@@ -894,6 +896,10 @@ const getErrorMessage = (err: unknown, fallback: string) => {
   return typed?.data?.statusMessage || typed?.message || fallback;
 };
 
+const triggerHeaderRefresh = () => {
+  headerRefreshToken.value += 1;
+};
+
 const isActionLoading = (type: "request" | "leave") =>
   actionLoading.value && actionType.value === type;
 
@@ -932,8 +938,12 @@ const boardTasksTotal = computed(() => {
   return Object.values(stats).reduce((sum, count) => sum + count, 0);
 });
 
-const boardOverdueTotal = computed(() => {
-  if (boardStats.value) return boardStats.value.overdue;
+const boardHotTotal = computed(() => {
+  if (boardStats.value) {
+    if (typeof boardStats.value.hot === "number") return boardStats.value.hot;
+    if (typeof boardStats.value.overdue === "number")
+      return boardStats.value.overdue;
+  }
   return selectedProject.value?.hotTasksCount ?? 0;
 });
 
@@ -1294,15 +1304,22 @@ const recomputeBoardStats = () => {
   };
 
   let overdue = 0;
+  let hot = 0;
   (Object.keys(byStatus) as TaskStatus[]).forEach((status) => {
     tasksByStatus.value[status] = tasksByStatus.value[status].map((task) => {
       const isOverdue = computeOverdue(task);
       if (isOverdue) overdue += 1;
+      if (
+        status !== "DONE" &&
+        (task.priority === "HIGH" || task.priority === "URGENT")
+      ) {
+        hot += 1;
+      }
       return { ...task, isOverdue };
     });
   });
 
-  boardStats.value = { byStatus, overdue };
+  boardStats.value = { byStatus, hot, overdue };
 };
 
 const syncProjectCounts = (projectId: string) => {
@@ -1311,17 +1328,23 @@ const syncProjectCounts = (projectId: string) => {
     (sum, count) => sum + count,
     0,
   );
+  const nextHot = boardStats.value?.hot ?? boardStats.value?.overdue ?? 0;
 
   const updateList = (list: ProjectCard[]) => {
     const project = list.find((item) => item.id === projectId);
-    if (project) {
-      project.tasksCount = total;
-      project.hotTasksCount = boardStats.value?.overdue ?? 0;
-    }
+    if (!project) return false;
+    const changed =
+      project.tasksCount !== total || project.hotTasksCount !== nextHot;
+    project.tasksCount = total;
+    project.hotTasksCount = nextHot;
+    return changed;
   };
 
-  updateList(myProjects.value);
-  updateList(otherProjects.value);
+  const updatedMy = updateList(myProjects.value);
+  const updatedOther = updateList(otherProjects.value);
+  if (updatedMy || updatedOther) {
+    triggerHeaderRefresh();
+  }
 };
 
 const loadBoard = async (projectId: string) => {

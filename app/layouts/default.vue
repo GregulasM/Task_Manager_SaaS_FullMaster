@@ -250,6 +250,7 @@ const user = ref<UserPublic | null>(null);
 const hotTasks = ref(0);
 const logoutLoading = ref(false);
 const mobileMenuOpen = ref(false);
+const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
 
 const isHome = computed(() => route.path === "/");
 const isAnalytics = computed(
@@ -345,6 +346,13 @@ watch(
   () => {
     refreshHeader();
     mobileMenuOpen.value = false;
+  },
+);
+
+watch(
+  () => headerRefreshToken.value,
+  () => {
+    refreshHeader();
   },
 );
 </script>
