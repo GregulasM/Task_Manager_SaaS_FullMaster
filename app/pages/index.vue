@@ -14,7 +14,7 @@
               <UBadge
                 class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
               >
-                Заглушка
+                {{ loading ? "Загрузка" : "API" }}
               </UBadge>
             </div>
           </template>
@@ -23,14 +23,26 @@
             :items="accordionItems"
             type="multiple"
             :default-value="['my', 'other']"
-            class="space-y-3"
+            class="space-y-4"
           >
             <template #leading="{ item }">
               <UIcon :name="item.icon" class="h-4 w-4 text-sky-600" />
             </template>
 
             <template #my>
-              <div class="space-y-2">
+              <div
+                v-if="loading"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-xs text-slate-600"
+              >
+                Загрузка проектов...
+              </div>
+              <div
+                v-else-if="!myProjects.length"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+              >
+                Пока нет ваших проектов.
+              </div>
+              <div v-else class="space-y-2 pb-4">
                 <UButton
                   v-for="project in myProjects"
                   :key="project.id"
@@ -60,7 +72,19 @@
             </template>
 
             <template #other>
-              <div class="space-y-2">
+              <div
+                v-if="loading"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+              >
+                Загрузка проектов...
+              </div>
+              <div
+                v-else-if="!otherProjects.length"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+              >
+                Пока нет других проектов.
+              </div>
+              <div v-else class="space-y-2">
                 <UButton
                   v-for="project in otherProjects"
                   :key="project.id"
@@ -93,6 +117,13 @@
       </aside>
 
       <section class="basis-6/8 space-y-6 lg:flex-1 lg:min-w-0">
+        <UAlert
+          v-if="errorMessage"
+          icon="i-heroicons-exclamation-circle"
+          title="Ошибка"
+          :description="errorMessage"
+          class="border border-rose-200 bg-rose-50 text-slate-900"
+        />
         <UCard
           v-if="selectedProject && !isBoardOpen"
           class="rounded-[32px] border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
@@ -162,7 +193,9 @@
                 class="rounded-full border-sky-200 text-slate-900"
                 icon="i-heroicons-trash"
                 leading
-                disabled
+                :loading="isActionLoading('leave')"
+                :disabled="loading || isActionLoading('request')"
+                @click="handleMyAction"
               >
                 Удалить из «Моих»
               </UButton>
@@ -172,7 +205,9 @@
                 class="rounded-full border-sky-200 text-slate-900"
                 icon="i-heroicons-user-plus"
                 leading
-                disabled
+                :loading="isActionLoading('request')"
+                :disabled="loading || isActionLoading('leave')"
+                @click="requestAccess"
               >
                 Запросить доступ
               </UButton>
@@ -283,50 +318,24 @@ type ProjectCard = {
   description: string;
   tasksCount: number;
   hotTasksCount: number;
+  role?: "OWNER" | "MEMBER" | null;
 };
 
 type ProjectGroup = "my" | "other";
 
-const myProjects: ProjectCard[] = [
-  {
-    id: "my-1",
-    name: "FullMaster Core",
-    description: "Основной продуктовый проект платформы.",
-    tasksCount: 18,
-    hotTasksCount: 1,
-  },
-  {
-    id: "my-2",
-    name: "Marketing Sprint",
-    description: "Контент, лендинги и сбор лидов.",
-    tasksCount: 9,
-    hotTasksCount: 0,
-  },
-  {
-    id: "my-3",
-    name: "Mobile MVP",
-    description: "Прототип мобильного приложения.",
-    tasksCount: 14,
-    hotTasksCount: 3,
-  },
-];
+type ProjectApi = {
+  id: string;
+  name: string;
+  description?: string | null;
+  tasksCount?: number;
+  hotTasksCount?: number;
+  role?: "OWNER" | "MEMBER" | null;
+};
 
-const otherProjects: ProjectCard[] = [
-  {
-    id: "other-1",
-    name: "Community Hub",
-    description: "Открытый проект для участников сообщества.",
-    tasksCount: 6,
-    hotTasksCount: 0,
-  },
-  {
-    id: "other-2",
-    name: "Design System",
-    description: "UI-библиотека и гайд по стилю.",
-    tasksCount: 11,
-    hotTasksCount: 2,
-  },
-];
+const myProjects = ref<ProjectCard[]>([]);
+const otherProjects = ref<ProjectCard[]>([]);
+const loading = ref(false);
+const errorMessage = ref("");
 
 const accordionItems = [
   {
@@ -343,9 +352,11 @@ const accordionItems = [
   },
 ];
 
-const selectedProject = ref<ProjectCard | null>(myProjects[0] ?? null);
-const selectedGroup = ref<ProjectGroup>(myProjects.length ? "my" : "other");
+const selectedProject = ref<ProjectCard | null>(null);
+const selectedGroup = ref<ProjectGroup>("my");
 const isBoardOpen = ref(false);
+const actionLoading = ref(false);
+const actionType = ref<"request" | "leave" | null>(null);
 
 const selectProject = (project: ProjectCard, group: ProjectGroup) => {
   selectedProject.value = project;
@@ -372,6 +383,141 @@ const hotBadgeClass = (count: number) => {
   return "border-rose-200 bg-rose-100 text-rose-800";
 };
 
+const mapProject = (project: ProjectApi): ProjectCard => ({
+  id: project.id,
+  name: project.name,
+  description: project.description ?? "Без описания",
+  tasksCount: project.tasksCount ?? 0,
+  hotTasksCount: project.hotTasksCount ?? 0,
+  role: project.role ?? null,
+});
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+  if (typeof err === "string") return err;
+  const typed = err as { data?: { statusMessage?: string }; message?: string };
+  return typed?.data?.statusMessage || typed?.message || fallback;
+};
+
+const isActionLoading = (type: "request" | "leave") =>
+  actionLoading.value && actionType.value === type;
+
+const syncSelection = () => {
+  const currentId = selectedProject.value?.id;
+  let nextProject: ProjectCard | null = null;
+  let nextGroup: ProjectGroup = "my";
+
+  if (currentId) {
+    const fromMy = myProjects.value.find((project) => project.id === currentId);
+    if (fromMy) {
+      nextProject = fromMy;
+      nextGroup = "my";
+    } else {
+      const fromOther = otherProjects.value.find(
+        (project) => project.id === currentId,
+      );
+      if (fromOther) {
+        nextProject = fromOther;
+        nextGroup = "other";
+      }
+    }
+  }
+
+  if (!nextProject && myProjects.value.length) {
+    nextProject = myProjects.value[0];
+    nextGroup = "my";
+  }
+
+  if (!nextProject && otherProjects.value.length) {
+    nextProject = otherProjects.value[0];
+    nextGroup = "other";
+  }
+
+  selectedProject.value = nextProject;
+  selectedGroup.value = nextGroup;
+  if (!nextProject) isBoardOpen.value = false;
+};
+
+const loadProjects = async () => {
+  loading.value = true;
+  errorMessage.value = "";
+
+  try {
+    const [my, other] = await Promise.all([
+      $fetch<ProjectApi[]>("/api/project", { query: { scope: "my" } }),
+      $fetch<ProjectApi[]>("/api/project", { query: { scope: "other" } }),
+    ]);
+
+    myProjects.value = my.map(mapProject);
+    otherProjects.value = other.map(mapProject);
+  } catch (err) {
+    myProjects.value = [];
+    otherProjects.value = [];
+    errorMessage.value = getErrorMessage(err, "Не удалось загрузить проекты.");
+  } finally {
+    loading.value = false;
+    syncSelection();
+  }
+};
+
+const handleMyAction = async () => {
+  const project = selectedProject.value;
+  if (!project) return;
+
+  if (project.role === "OWNER") {
+    await navigateTo("/profile/my_projects");
+    return;
+  }
+
+  await leaveProject(project.id);
+};
+
+const requestAccess = async () => {
+  const project = selectedProject.value;
+  if (!project) return;
+  if (actionLoading.value) return;
+
+  actionLoading.value = true;
+  actionType.value = "request";
+  errorMessage.value = "";
+
+  try {
+    await $fetch("/api/project", {
+      method: "POST",
+      body: { action: "request_access", projectId: project.id },
+    });
+    await loadProjects();
+  } catch (err) {
+    errorMessage.value = getErrorMessage(err, "Не удалось запросить доступ.");
+  } finally {
+    actionLoading.value = false;
+    actionType.value = null;
+  }
+};
+
+const leaveProject = async (projectId: string) => {
+  if (actionLoading.value) return;
+
+  actionLoading.value = true;
+  actionType.value = "leave";
+  errorMessage.value = "";
+
+  try {
+    await $fetch("/api/project", {
+      method: "DELETE",
+      query: { id: projectId, leave: "1" },
+    });
+    await loadProjects();
+  } catch (err) {
+    errorMessage.value = getErrorMessage(
+      err,
+      "Не удалось удалить проект из моих.",
+    );
+  } finally {
+    actionLoading.value = false;
+    actionType.value = null;
+  }
+};
+
 const boardColumns = [
   {
     id: "todo",
@@ -394,4 +540,8 @@ const boardColumns = [
     items: ["Заглушка задачи 6"],
   },
 ];
+
+onMounted(() => {
+  loadProjects();
+});
 </script>

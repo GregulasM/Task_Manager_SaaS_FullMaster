@@ -7,9 +7,12 @@ const AUTH_COOKIE = "fm_token";
 type ProjectPostBody = {
   action?:
     | "create"
+    | "request_access"
     | "invite"
     | "accept_invite"
     | "decline_invite"
+    | "approve_request"
+    | "reject_request"
     | "revoke_invite"
     | "remove_member";
   id?: string; // projectId (alias)
@@ -124,6 +127,103 @@ async function requireAuth(event: any) {
 
 function randomToken(bytes = 24) {
   return base64url(randomBytes(bytes));
+}
+
+async function getInvitationForUserAction({
+  token,
+  invitationId,
+  email,
+}: {
+  token?: string;
+  invitationId?: string;
+  email: string;
+}) {
+  if (!token && !invitationId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Missing token or invitationId",
+    });
+  }
+
+  const invitation = await prisma.projectInvitation.findUnique({
+    where: token ? { token } : { id: invitationId! },
+    select: {
+      id: true,
+      projectId: true,
+      email: true,
+      status: true,
+      token: true,
+    },
+  });
+
+  if (!invitation)
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Invitation not found",
+    });
+
+  if (invitation.status !== "PENDING") {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "Invitation not pending",
+    });
+  }
+
+  if (normalizeEmail(invitation.email) !== normalizeEmail(email)) {
+    throw createError({ statusCode: 403, statusMessage: "Forbidden" });
+  }
+
+  return invitation;
+}
+
+async function getRequestForOwnerAction({
+  invitationId,
+  ownerId,
+}: {
+  invitationId?: string;
+  ownerId: string;
+}) {
+  if (!invitationId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Missing invitationId",
+    });
+  }
+
+  const invitation = await prisma.projectInvitation.findUnique({
+    where: { id: invitationId },
+    select: {
+      id: true,
+      projectId: true,
+      status: true,
+      invitedById: true,
+      project: { select: { ownerId: true } },
+    },
+  });
+
+  if (!invitation) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Invitation not found",
+    });
+  }
+
+  if (invitation.status !== "PENDING") {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "Invitation not pending",
+    });
+  }
+
+  if (invitation.project.ownerId !== ownerId) {
+    throw createError({ statusCode: 403, statusMessage: "Forbidden" });
+  }
+
+  if (!invitation.invitedById || invitation.invitedById === ownerId) {
+    throw createError({ statusCode: 409, statusMessage: "Not a request" });
+  }
+
+  return invitation;
 }
 
 async function attachTaskCounts(projects: Array<{ id: string }>) {
@@ -310,6 +410,81 @@ export default defineEventHandler(async (event) => {
       return invitations;
     }
 
+    // invitations for current user + access requests to owned projects
+    if (scope === "invites" || scope === "my_invites") {
+      const email = normalizeEmail(user.email);
+
+      const [invitations, requests] = await Promise.all([
+        prisma.projectInvitation.findMany({
+          where: {
+            email,
+            status: "PENDING",
+            invitedById: { not: user.id },
+          },
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            token: true,
+            email: true,
+            createdAt: true,
+            project: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                ownerId: true,
+              },
+            },
+            invitedBy: { select: { id: true, email: true, name: true } },
+          },
+        }),
+        prisma.projectInvitation.findMany({
+          where: {
+            status: "PENDING",
+            invitedById: { not: user.id },
+            project: { ownerId: user.id },
+          },
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            createdAt: true,
+            project: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                ownerId: true,
+              },
+            },
+            invitedBy: { select: { id: true, email: true, name: true } },
+          },
+        }),
+      ]);
+
+      const items = [
+        ...invitations.map((invite) => ({
+          id: invite.id,
+          kind: "invite" as const,
+          projectId: invite.project.id,
+          projectName: invite.project.name,
+          projectDescription: invite.project.description,
+          invitedBy: invite.invitedBy,
+          createdAt: invite.createdAt,
+        })),
+        ...requests.map((request) => ({
+          id: request.id,
+          kind: "request" as const,
+          projectId: request.project.id,
+          projectName: request.project.name,
+          projectDescription: request.project.description,
+          invitedBy: request.invitedBy,
+          createdAt: request.createdAt,
+        })),
+      ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+      return items;
+    }
+
     // project details (member/owner)
     const id = (query?.id || "") as string;
     if (!id)
@@ -415,6 +590,86 @@ export default defineEventHandler(async (event) => {
       };
     }
 
+    // request access (creates a pending request)
+    if (action === "request_access") {
+      const projectId = (body?.projectId || body?.id || "").trim();
+
+      if (!projectId)
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Missing projectId",
+        });
+
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { id: true, ownerId: true },
+      });
+
+      if (!project)
+        throw createError({
+          statusCode: 404,
+          statusMessage: "Project not found",
+        });
+
+      if (project.ownerId === user.id) {
+        return { ok: true, role: "OWNER" };
+      }
+
+      const existingMember = await prisma.projectMember.findUnique({
+        where: {
+          projectId_userId: { projectId, userId: user.id },
+        },
+        select: { role: true },
+      });
+
+      if (existingMember?.role) {
+        return { ok: true, role: existingMember.role };
+      }
+
+      const email = normalizeEmail(user.email);
+      const existingInvitation = await prisma.projectInvitation.findUnique({
+        where: { projectId_email: { projectId, email } },
+        select: { id: true, status: true, invitedById: true },
+      });
+
+      if (existingInvitation) {
+        if (
+          existingInvitation.status === "PENDING" &&
+          existingInvitation.invitedById !== user.id
+        ) {
+          return { ok: true, status: "ALREADY_INVITED" };
+        }
+
+        await prisma.projectInvitation.update({
+          where: { id: existingInvitation.id },
+          data: {
+            token: randomToken(),
+            status: "PENDING",
+            invitedById: user.id,
+            acceptedById: null,
+            respondedAt: null,
+          },
+        });
+
+        return { ok: true, status: "PENDING" };
+      }
+
+      await prisma.projectInvitation.create({
+        data: {
+          projectId,
+          email,
+          token: randomToken(),
+          invitedById: user.id,
+          status: "PENDING",
+          acceptedById: null,
+          respondedAt: null,
+        },
+        select: { id: true },
+      });
+
+      return { ok: true, status: "PENDING" };
+    }
+
     // invite user by email (owner only)
     if (action === "invite") {
       const projectId = (body?.projectId || body?.id || "").trim();
@@ -436,15 +691,34 @@ export default defineEventHandler(async (event) => {
       if (project.ownerId !== user.id)
         throw createError({ statusCode: 403, statusMessage: "Forbidden" });
 
-      // already member?
-      const existingMember = await prisma.projectMember.findUnique({
-        where: { projectId_userId: { projectId, userId: user.id } },
-        select: { userId: true },
+      if (email === normalizeEmail(user.email)) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: "Already a member",
+        });
+      }
+
+      const invitee = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true },
       });
 
-      if (email === user.email || existingMember?.userId === user.id) {
-        // allow inviting others, prevent self-invite
-        if (email === user.email) {
+      if (invitee) {
+        if (invitee.id === project.ownerId) {
+          throw createError({
+            statusCode: 409,
+            statusMessage: "Already a member",
+          });
+        }
+
+        const existingMember = await prisma.projectMember.findUnique({
+          where: {
+            projectId_userId: { projectId, userId: invitee.id },
+          },
+          select: { userId: true },
+        });
+
+        if (existingMember?.userId) {
           throw createError({
             statusCode: 409,
             statusMessage: "Already a member",
@@ -506,34 +780,14 @@ export default defineEventHandler(async (event) => {
 
     // accept invitation (invited user)
     if (action === "accept_invite") {
-      const token = (body?.token || "").trim();
-      if (!token)
-        throw createError({ statusCode: 400, statusMessage: "Missing token" });
+      const token = body?.token?.trim();
+      const invitationId = body?.invitationId?.trim();
 
-      const invitation = await prisma.projectInvitation.findUnique({
-        where: { token },
-        select: {
-          id: true,
-          projectId: true,
-          email: true,
-          status: true,
-        },
+      const invitation = await getInvitationForUserAction({
+        token,
+        invitationId,
+        email: user.email,
       });
-
-      if (!invitation)
-        throw createError({
-          statusCode: 404,
-          statusMessage: "Invitation not found",
-        });
-
-      if (invitation.status !== "PENDING")
-        throw createError({
-          statusCode: 409,
-          statusMessage: "Invitation not pending",
-        });
-
-      if (normalizeEmail(invitation.email) !== normalizeEmail(user.email))
-        throw createError({ statusCode: 403, statusMessage: "Forbidden" });
 
       const result = await prisma.$transaction(async (tx) => {
         await tx.projectInvitation.update({
@@ -575,34 +829,84 @@ export default defineEventHandler(async (event) => {
         return project;
       });
 
+      if (!result)
+        throw createError({
+          statusCode: 404,
+          statusMessage: "Project not found",
+        });
+
       return { ok: true, project: result };
     }
 
     // decline invitation (invited user)
     if (action === "decline_invite") {
-      const token = (body?.token || "").trim();
-      if (!token)
-        throw createError({ statusCode: 400, statusMessage: "Missing token" });
+      const token = body?.token?.trim();
+      const invitationId = body?.invitationId?.trim();
 
-      const invitation = await prisma.projectInvitation.findUnique({
-        where: { token },
-        select: { id: true, email: true, status: true },
+      const invitation = await getInvitationForUserAction({
+        token,
+        invitationId,
+        email: user.email,
       });
 
-      if (!invitation)
-        throw createError({
-          statusCode: 404,
-          statusMessage: "Invitation not found",
+      await prisma.projectInvitation.update({
+        where: { id: invitation.id },
+        data: {
+          status: "DECLINED",
+          acceptedById: null,
+          respondedAt: new Date(),
+        },
+      });
+
+      return { ok: true };
+    }
+
+    // approve access request (owner)
+    if (action === "approve_request") {
+      const invitationId = body?.invitationId?.trim();
+
+      const invitation = await getRequestForOwnerAction({
+        invitationId,
+        ownerId: user.id,
+      });
+
+      await prisma.$transaction(async (tx) => {
+        await tx.projectInvitation.update({
+          where: { id: invitation.id },
+          data: {
+            status: "ACCEPTED",
+            acceptedById: invitation.invitedById,
+            respondedAt: new Date(),
+          },
         });
 
-      if (invitation.status !== "PENDING")
-        throw createError({
-          statusCode: 409,
-          statusMessage: "Invitation not pending",
+        await tx.projectMember.upsert({
+          where: {
+            projectId_userId: {
+              projectId: invitation.projectId,
+              userId: invitation.invitedById!,
+            },
+          },
+          update: {},
+          create: {
+            projectId: invitation.projectId,
+            userId: invitation.invitedById!,
+            role: "MEMBER",
+          },
         });
+      });
 
-      if (normalizeEmail(invitation.email) !== normalizeEmail(user.email))
-        throw createError({ statusCode: 403, statusMessage: "Forbidden" });
+      return { ok: true };
+    }
+
+    // reject access request (owner)
+    if (action === "reject_request") {
+      const invitationId = body?.invitationId?.trim();
+
+      const invitation = await getRequestForOwnerAction({
+        invitationId,
+        ownerId: user.id,
+      });
 
       await prisma.projectInvitation.update({
         where: { id: invitation.id },

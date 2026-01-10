@@ -1,16 +1,130 @@
 <template>
   <div class="min-h-screen bg-slate-50 text-slate-900">
-    <header
-      class="sticky top-0 z-40 border-b border-sky-200/70 bg-white/80 backdrop-blur"
-    >
-      <UContainer class="py-4">
+    <header class="sticky top-0 z-40">
+      <UContainer class="py-2">
         <div
-          class="rounded-[32px] border border-sky-200 bg-white/90 px-6 py-4 shadow-[0_20px_60px_rgba(59,130,246,0.12)]"
+          class="rounded-[32px] border border-sky-200 bg-white/90 px-6 py-2 shadow-[0_5px_10px_rgba(59,130,246,0.12)]"
         >
+          <div class="lg:hidden">
+            <UCollapsible v-model:open="mobileMenuOpen">
+              <template #default="{ open }">
+                <div class="flex items-center justify-between gap-3">
+                  <div
+                    class="flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900"
+                  >
+                    <UIcon
+                      name="i-heroicons-sparkles"
+                      class="h-4 w-4 text-sky-600"
+                    />
+                    <p class="text-sky-600 font-bold">
+                      FullMaster: <span class="text-black">Task Manager</span>
+                    </p>
+                  </div>
+                  <UButton
+                    variant="outline"
+                    class="rounded-full border-sky-200 bg-white text-slate-900"
+                    :icon="
+                      open
+                        ? 'i-heroicons-chevron-up'
+                        : 'i-heroicons-chevron-down'
+                    "
+                    aria-label="Открыть меню"
+                  />
+                </div>
+              </template>
+
+              <template #content>
+                <div class="mt-4 space-y-4">
+                  <div class="flex flex-col gap-2">
+                    <UButton
+                      to="/"
+                      variant="outline"
+                      class="w-full rounded-full border-sky-200 bg-white text-slate-900"
+                      :class="navClass(isHome)"
+                      icon="i-heroicons-home"
+                      leading
+                    >
+                      Главная
+                    </UButton>
+                    <UButton
+                      to="/analytics"
+                      variant="outline"
+                      class="w-full rounded-full border-sky-200 bg-white text-slate-900"
+                      :class="navClass(isAnalytics)"
+                      icon="i-heroicons-chart-bar"
+                      leading
+                    >
+                      Аналитика
+                    </UButton>
+                  </div>
+
+                  <div class="flex flex-col gap-3 items-center justify-between">
+                    <div
+                      class="flex items-center w-full gap-3 rounded-full border border-sky-200 bg-sky-50/70 px-4 py-2"
+                    >
+                      <UAvatar
+                        size="lg"
+                        :text="userInitials"
+                        class="bg-white"
+                      />
+                      <div class="text-xs leading-snug">
+                        <p class="font-semibold text-slate-900">
+                          {{ userName }}
+                        </p>
+                        <p class="text-slate-600">
+                          {{ userEmail }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                      <UBadge
+                        :class="hotTasksBadgeClass"
+                        class="rounded-full border px-3 py-1 text-xs font-semibold"
+                      >
+                        {{ hotTasksLabel }}
+                      </UBadge>
+                      <UButton
+                        v-if="isAuthenticated"
+                        to="/profile"
+                        variant="outline"
+                        class="rounded-full border-sky-200 bg-white text-slate-900"
+                        icon="i-heroicons-user-circle"
+                        leading
+                      >
+                        Профиль
+                      </UButton>
+                      <UButton
+                        v-if="isAuthenticated"
+                        variant="solid"
+                        class="rounded-full bg-sky-200 text-slate-900"
+                        icon="i-heroicons-arrow-right-on-rectangle"
+                        :loading="logoutLoading"
+                        leading
+                        @click="logout"
+                      >
+                        Выйти
+                      </UButton>
+                      <UButton
+                        v-else
+                        to="/auth/login"
+                        variant="solid"
+                        class="rounded-full bg-sky-200 text-slate-900"
+                        icon="i-heroicons-arrow-right-on-rectangle"
+                        leading
+                      >
+                        Войти
+                      </UButton>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </UCollapsible>
+          </div>
+
           <div
-            class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+            class="hidden lg:flex lg:flex-col lg:gap-4 lg:flex-row lg:items-center lg:justify-between"
           >
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
               <div class="flex flex-wrap items-center gap-3">
                 <div
                   class="flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900"
@@ -19,24 +133,17 @@
                     name="i-heroicons-sparkles"
                     class="h-4 w-4 text-sky-600"
                   />
-                  Navbar проектов FullMaster
+                  <p class="text-sky-600 font-bold">
+                    FullMaster: <span class="text-black">Task Manager</span>
+                  </p>
                 </div>
-                <NuxtLink to="/" class="flex items-center gap-2">
-                  <AppLogo
-                    class="h-6 w-auto text-slate-900"
-                    style="--ui-primary: #38bdf8"
-                  />
-                  <span class="text-sm font-semibold text-slate-900">
-                    FullMaster
-                  </span>
-                </NuxtLink>
               </div>
 
-              <div class="flex flex-wrap items-center gap-2">
+              <div class="flex flex-row items-center gap-2">
                 <UButton
                   to="/"
                   variant="outline"
-                  class="rounded-full border-sky-200 bg-white text-slate-900"
+                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900"
                   :class="navClass(isHome)"
                   icon="i-heroicons-home"
                   leading
@@ -46,7 +153,7 @@
                 <UButton
                   to="/analytics"
                   variant="outline"
-                  class="rounded-full border-sky-200 bg-white text-slate-900"
+                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900"
                   :class="navClass(isAnalytics)"
                   icon="i-heroicons-chart-bar"
                   leading
@@ -57,61 +164,62 @@
             </div>
 
             <div
-              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end"
+              class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-end"
             >
-              <div
-                class="flex items-center gap-3 rounded-full border border-sky-200 bg-sky-50/70 px-4 py-2"
-              >
-                <UAvatar size="sm" :text="userInitials" class="bg-white" />
-                <div class="text-xs leading-snug">
-                  <p class="font-semibold text-slate-900">
-                    {{ userName }}
-                  </p>
-                  <p class="text-slate-600">
-                    {{ userEmail }}
-                  </p>
+              <div class="flex flex-col items-center gap-2">
+                <div
+                  class="flex items-center w-full gap-3 rounded-full border border-sky-200 bg-sky-50/70 px-4 py-2"
+                >
+                  <UAvatar size="lg" :text="userInitials" class="bg-white" />
+                  <div class="text-xs leading-snug">
+                    <p class="font-semibold text-slate-900">
+                      {{ userName }}
+                    </p>
+                    <p class="text-slate-600">
+                      {{ userEmail }}
+                    </p>
+                  </div>
                 </div>
-              </div>
+                <div class="flex items-center gap-3">
+                  <UBadge
+                    :class="hotTasksBadgeClass"
+                    class="rounded-full border px-3 py-1 text-xs font-semibold"
+                  >
+                    {{ hotTasksLabel }}
+                  </UBadge>
 
-              <div class="flex flex-wrap items-center gap-2">
-                <UBadge
-                  :class="hotTasksBadgeClass"
-                  class="rounded-full border px-3 py-1 text-xs font-semibold"
-                >
-                  {{ hotTasksLabel }}
-                </UBadge>
-
-                <UButton
-                  v-if="isAuthenticated"
-                  to="/profile"
-                  variant="outline"
-                  class="rounded-full border-sky-200 bg-white text-slate-900"
-                  icon="i-heroicons-user-circle"
-                  leading
-                >
-                  Профиль
-                </UButton>
-                <UButton
-                  v-if="isAuthenticated"
-                  variant="solid"
-                  class="rounded-full bg-sky-200 text-slate-900"
-                  icon="i-heroicons-arrow-right-on-rectangle"
-                  :loading="logoutLoading"
-                  leading
-                  @click="logout"
-                >
-                  Выйти
-                </UButton>
-                <UButton
-                  v-else
-                  to="/auth/login"
-                  variant="solid"
-                  class="rounded-full bg-sky-200 text-slate-900"
-                  icon="i-heroicons-arrow-right-on-rectangle"
-                  leading
-                >
-                  Войти
-                </UButton>
+                  <UButton
+                    v-if="isAuthenticated"
+                    to="/profile"
+                    variant="outline"
+                    class="rounded-full border-sky-200 bg-white text-slate-900"
+                    icon="i-heroicons-user-circle"
+                    leading
+                  >
+                    Профиль
+                  </UButton>
+                  <UButton
+                    v-if="isAuthenticated"
+                    variant="solid"
+                    class="rounded-full bg-sky-200 text-slate-900"
+                    icon="i-heroicons-arrow-right-on-rectangle"
+                    :loading="logoutLoading"
+                    leading
+                    @click="logout"
+                  >
+                    Выйти
+                  </UButton>
+                  <UButton
+                    v-else
+                    to="/auth/login"
+                    variant="solid"
+                    class="rounded-full bg-sky-200 text-slate-900"
+                    icon="i-heroicons-arrow-right-on-rectangle"
+                    leading
+                  >
+                    Войти
+                  </UButton>
+                </div>
               </div>
             </div>
           </div>
@@ -119,7 +227,7 @@
       </UContainer>
     </header>
 
-    <UMain class="px-4 pb-16 pt-8">
+    <UMain class="px-4 pb-4 pt-4">
       <slot />
     </UMain>
   </div>
@@ -141,6 +249,7 @@ const route = useRoute();
 const user = ref<UserPublic | null>(null);
 const hotTasks = ref(0);
 const logoutLoading = ref(false);
+const mobileMenuOpen = ref(false);
 
 const isHome = computed(() => route.path === "/");
 const isAnalytics = computed(
@@ -235,6 +344,7 @@ watch(
   () => route.fullPath,
   () => {
     refreshHeader();
+    mobileMenuOpen.value = false;
   },
 );
 </script>
