@@ -7,6 +7,11 @@ const AUTH_COOKIE = "fm_token";
 type TaskStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE";
 type TaskPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
+const TASK_STATUSES: TaskStatus[] = ["TODO", "IN_PROGRESS", "REVIEW", "DONE"];
+const TASK_PRIORITIES: TaskPriority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
+const TASK_STATUS_SET = new Set<TaskStatus>(TASK_STATUSES);
+const TASK_PRIORITY_SET = new Set<TaskPriority>(TASK_PRIORITIES);
+
 type CreateTaskBody = {
   action?: "create" | "move" | "bulk_reorder" | "delete";
   projectId?: string;
@@ -42,6 +47,51 @@ type BulkReorderBody = {
   status?: TaskStatus;
   orderedIds?: string[];
 };
+
+function parseStatus(
+  input: unknown,
+  fallback?: TaskStatus,
+): TaskStatus | undefined {
+  if (typeof input === "undefined" || input === null || input === "")
+    return fallback;
+  if (typeof input === "string" && TASK_STATUS_SET.has(input as TaskStatus)) {
+    return input as TaskStatus;
+  }
+  throw createError({ statusCode: 400, statusMessage: "Invalid status" });
+}
+
+function parsePriority(
+  input: unknown,
+  fallback?: TaskPriority,
+): TaskPriority | undefined {
+  if (typeof input === "undefined" || input === null || input === "")
+    return fallback;
+  if (
+    typeof input === "string" &&
+    TASK_PRIORITY_SET.has(input as TaskPriority)
+  ) {
+    return input as TaskPriority;
+  }
+  throw createError({ statusCode: 400, statusMessage: "Invalid priority" });
+}
+
+function parseDueDate(input: unknown) {
+  if (typeof input === "undefined") return undefined;
+  if (input === null || input === "") return null;
+  if (typeof input !== "string") {
+    throw createError({ statusCode: 400, statusMessage: "Invalid dueDate" });
+  }
+  const parsed = new Date(input);
+  if (Number.isNaN(parsed.getTime())) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid dueDate" });
+  }
+  return parsed;
+}
+
+function normalizeId(input: unknown) {
+  if (typeof input !== "string") return "";
+  return input.trim();
+}
 
 function base64url(input: Buffer | string) {
   const buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
@@ -203,7 +253,7 @@ async function moveTaskTransactional(
   projectId: string,
   taskId: string,
   toStatus: TaskStatus,
-  toIndex: number,
+  toIndex?: number,
 ) {
   const task = await tx.task.findUnique({
     where: { id: taskId },
@@ -223,9 +273,10 @@ async function moveTaskTransactional(
   });
 
   const filtered = dest.filter((t: any) => t.id !== taskId);
-  const idx = Number.isFinite(toIndex)
-    ? Math.max(0, Math.min(toIndex, filtered.length))
-    : filtered.length;
+  const idx =
+    typeof toIndex === "number" && Number.isFinite(toIndex)
+      ? Math.max(0, Math.min(Math.floor(toIndex), filtered.length))
+      : filtered.length;
 
   filtered.splice(idx, 0, { id: taskId });
 
@@ -257,7 +308,7 @@ export default defineEventHandler(async (event) => {
     const user = await requireAuth(event);
 
     const action = (query?.action || "board") as string;
-    const projectId = (query?.projectId || query?.id || "") as string;
+    const projectId = normalizeId(query?.projectId || query?.id || "");
 
     if (!projectId)
       throw createError({
@@ -269,12 +320,14 @@ export default defineEventHandler(async (event) => {
 
     // single task
     if (action === "one") {
-      const id = (query?.taskId ||
-        query?.idTask ||
-        query?.tid ||
-        query?.task ||
-        query?.id ||
-        "") as string;
+      const id = normalizeId(
+        query?.taskId ||
+          query?.idTask ||
+          query?.tid ||
+          query?.task ||
+          query?.id ||
+          "",
+      );
       if (!id)
         throw createError({ statusCode: 400, statusMessage: "Missing taskId" });
 
@@ -333,8 +386,8 @@ export default defineEventHandler(async (event) => {
 
     // list (filtered)
     if (action === "list") {
-      const status = (query?.status || "") as TaskStatus | "";
-      const assigneeId = (query?.assigneeId || "") as string;
+      const status = parseStatus(query?.status);
+      const assigneeId = normalizeId(query?.assigneeId);
       const overdueOnly = query?.overdue === "1";
 
       const where: any = { projectId };
@@ -435,13 +488,13 @@ export default defineEventHandler(async (event) => {
     if (action === "create") {
       const b = body as CreateTaskBody;
 
-      const projectId = (b?.projectId || "").trim();
-      const title = b?.title?.trim();
-      const description = b?.description?.trim();
-      const status = (b?.status || "TODO") as TaskStatus;
-      const priority = (b?.priority || "MEDIUM") as TaskPriority;
-      const assigneeId =
-        typeof b?.assigneeId === "string" ? b.assigneeId.trim() : null;
+      const projectId = normalizeId(b?.projectId);
+      const title = typeof b?.title === "string" ? b.title.trim() : "";
+      const description =
+        typeof b?.description === "string" ? b.description.trim() : "";
+      const status = parseStatus(b?.status, "TODO")!;
+      const priority = parsePriority(b?.priority, "MEDIUM")!;
+      const assigneeId = normalizeId(b?.assigneeId) || null;
 
       if (!projectId)
         throw createError({
@@ -471,12 +524,9 @@ export default defineEventHandler(async (event) => {
         }
       }
 
+      const parsedDueDate = parseDueDate(b?.dueDate);
       const dueDate =
-        typeof b?.dueDate === "string" && b.dueDate
-          ? new Date(b.dueDate)
-          : b?.dueDate === null
-            ? null
-            : null;
+        typeof parsedDueDate === "undefined" ? null : parsedDueDate;
 
       const position = (await getMaxPosition(projectId, status)) + 1;
 
@@ -515,10 +565,13 @@ export default defineEventHandler(async (event) => {
     if (action === "move") {
       const b = body as MoveTaskBody;
 
-      const projectId = (b?.projectId || "").trim();
-      const id = (b?.id || "").trim();
-      const toStatus = (b?.toStatus || "").trim() as TaskStatus;
-      const toIndex = typeof b?.toIndex === "number" ? b.toIndex : 0;
+      const projectId = normalizeId(b?.projectId);
+      const id = normalizeId(b?.id);
+      const toStatus = parseStatus(b?.toStatus);
+      const toIndex =
+        typeof b?.toIndex === "number" && Number.isFinite(b?.toIndex)
+          ? b.toIndex
+          : undefined;
 
       if (!projectId)
         throw createError({
@@ -569,9 +622,11 @@ export default defineEventHandler(async (event) => {
     if (action === "bulk_reorder") {
       const b = body as BulkReorderBody;
 
-      const projectId = (b?.projectId || "").trim();
-      const status = (b?.status || "").trim() as TaskStatus;
-      const orderedIds = Array.isArray(b?.orderedIds) ? b!.orderedIds! : [];
+      const projectId = normalizeId(b?.projectId);
+      const status = parseStatus(b?.status);
+      const orderedIds = Array.isArray(b?.orderedIds)
+        ? b!.orderedIds!.filter((id) => typeof id === "string")
+        : [];
 
       if (!projectId)
         throw createError({
@@ -585,6 +640,12 @@ export default defineEventHandler(async (event) => {
           statusCode: 400,
           statusMessage: "Missing orderedIds",
         });
+      if (new Set(orderedIds).size !== orderedIds.length) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "orderedIds contains duplicates",
+        });
+      }
 
       await requireProjectAccess(projectId, user.id);
 
@@ -595,6 +656,13 @@ export default defineEventHandler(async (event) => {
         });
 
         const set = new Set(tasks.map((t: any) => t.id));
+        if (tasks.length !== orderedIds.length) {
+          throw createError({
+            statusCode: 400,
+            statusMessage: "orderedIds does not match column tasks",
+          });
+        }
+
         for (const id of orderedIds) {
           if (!set.has(id)) {
             throw createError({
@@ -618,8 +686,8 @@ export default defineEventHandler(async (event) => {
     // delete (POST variant)
     if (action === "delete") {
       const b = body as any;
-      const projectId = (b?.projectId || "").trim();
-      const id = (b?.id || "").trim();
+      const projectId = normalizeId(b?.projectId);
+      const id = normalizeId(b?.id);
 
       if (!projectId)
         throw createError({
@@ -658,7 +726,7 @@ export default defineEventHandler(async (event) => {
     const user = await requireAuth(event);
     const body = await readBody<UpdateTaskBody>(event);
 
-    const id = (body?.id || "").trim();
+    const id = normalizeId(body?.id);
     if (!id)
       throw createError({ statusCode: 400, statusMessage: "Missing id" });
 
@@ -681,12 +749,7 @@ export default defineEventHandler(async (event) => {
           ? null
           : undefined;
 
-    const dueDate =
-      typeof body?.dueDate === "string" && body.dueDate
-        ? new Date(body.dueDate)
-        : body?.dueDate === null
-          ? null
-          : undefined;
+    const dueDate = parseDueDate(body?.dueDate);
 
     const assigneeId =
       typeof body?.assigneeId === "string"
@@ -718,8 +781,8 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const status = body?.status;
-    const priority = body?.priority;
+    const status = parseStatus(body?.status);
+    const priority = parsePriority(body?.priority);
 
     const updated = await prisma.$transaction(async (tx) => {
       // status change: move to end of new column
@@ -788,8 +851,8 @@ export default defineEventHandler(async (event) => {
   if (method === "DELETE") {
     const user = await requireAuth(event);
 
-    const projectId = ((query?.projectId || "") as string).trim();
-    const id = ((query?.id || "") as string).trim();
+    const projectId = normalizeId(query?.projectId);
+    const id = normalizeId(query?.id);
 
     if (!projectId)
       throw createError({
