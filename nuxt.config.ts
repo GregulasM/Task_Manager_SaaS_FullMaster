@@ -9,7 +9,11 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/test-utils",
   ],
-
+  nitro: {
+    rollupConfig: {
+      external: [/^@prisma\//, /\.wasm$/],
+    },
+  },
   devtools: {
     enabled: true,
   },
