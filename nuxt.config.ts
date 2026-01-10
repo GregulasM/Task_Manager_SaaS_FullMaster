@@ -9,6 +9,13 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/test-utils",
   ],
+  runtimeConfig: {
+    authSecret:
+      process.env.NUXT_AUTH_SECRET ||
+      process.env.NUXT_JWT_SECRET ||
+      process.env.JWT_SECRET ||
+      "",
+  },
   nitro: {
     rollupConfig: {
       external: [/^@prisma\//, /\.wasm$/],
