@@ -38,7 +38,7 @@
           <UButton
             to="/auth/register"
             :class="[
-              'rounded-full border px-6 py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5',
+              'rounded-full hover:bg-blue-400 active:bg-blue-500  border px-6 py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5',
               bodyTextClass,
               tabClass(isRegister),
             ]"
@@ -86,7 +86,7 @@
             </div>
           </template>
 
-          <div class="space-y-4">
+          <div class="space-y-4 xs:mx-6 sm:mx-10">
             <UFormField label="Email" name="email" :ui="fieldUi">
               <UInput
                 v-model.trim="form.email"
@@ -95,6 +95,7 @@
                 autocomplete="email"
                 required
                 :ui="inputUi"
+                class="w-full"
               >
                 <template #leading>
                   <UIcon
@@ -113,6 +114,7 @@
                 autocomplete="current-password"
                 required
                 :ui="inputUi"
+                class="w-full"
               >
                 <template #leading>
                   <UIcon
