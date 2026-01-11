@@ -187,7 +187,7 @@
                   leading
                   :loading="deleteLoadingId === project.id"
                   :disabled="deleteLoadingId === project.id"
-                  @click="removeProject(project.id)"
+                  @click="confirmProjectAction('delete', project)"
                 >
                   Удалить
                 </UButton>
@@ -209,7 +209,7 @@
                   leading
                   :loading="leaveLoadingId === project.id"
                   :disabled="leaveLoadingId === project.id"
-                  @click="leaveProject(project.id)"
+                  @click="confirmProjectAction('leave', project)"
                 >
                   Выйти
                 </UButton>
@@ -336,6 +336,17 @@
         Пока проектов нет.
       </div>
     </div>
+
+    <ConfirmDialog
+      v-model="confirmOpen"
+      :title="confirmTitle"
+      :description="confirmDescription"
+      :confirm-text="confirmButtonText"
+      cancel-text="Отмена"
+      :tone="confirmTone"
+      :loading="confirmLoading"
+      @confirm="runConfirmedAction"
+    />
   </UCard>
 </template>
 
@@ -409,6 +420,11 @@ const membersLoadingId = ref<string | null>(null);
 const membersByProject = ref<Record<string, MemberItem[]>>({});
 const membersError = ref<Record<string, string>>({});
 const currentUserId = ref<string | null>(null);
+const confirmAction = ref<{
+  type: "delete" | "leave";
+  id: string;
+  name: string;
+} | null>(null);
 
 const form = reactive({
   name: "",
@@ -416,16 +432,52 @@ const form = reactive({
 });
 
 const inputUi = {
-  base: "bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
 };
 
 const textareaUi = {
-  base: "bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
 };
 
 const fieldUi = {
   label: "text-slate-900 font-medium",
 };
+
+const confirmOpen = computed({
+  get: () => Boolean(confirmAction.value),
+  set: (value) => {
+    if (!value) confirmAction.value = null;
+  },
+});
+
+const confirmTitle = computed(() =>
+  confirmAction.value?.type === "delete"
+    ? "Удалить проект?"
+    : "Выйти из проекта?",
+);
+
+const confirmDescription = computed(() => {
+  if (!confirmAction.value) return "";
+  return confirmAction.value.type === "delete"
+    ? `Проект «${confirmAction.value.name}» будет удален навсегда.`
+    : `Вы выйдете из проекта «${confirmAction.value.name}».`;
+});
+
+const confirmButtonText = computed(() =>
+  confirmAction.value?.type === "delete" ? "Удалить" : "Выйти",
+);
+
+const confirmTone = computed(() =>
+  confirmAction.value?.type === "delete" ? "danger" : "default",
+);
+
+const confirmLoading = computed(() => {
+  if (!confirmAction.value) return false;
+  if (confirmAction.value.type === "delete") {
+    return deleteLoadingId.value === confirmAction.value.id;
+  }
+  return leaveLoadingId.value === confirmAction.value.id;
+});
 
 const editingName = computed(() => {
   if (!editingId.value) return "";
@@ -476,6 +528,24 @@ const startEdit = (project: ProjectItem) => {
   editingId.value = project.id;
   form.name = project.name;
   form.description = project.description;
+};
+
+const confirmProjectAction = (
+  type: "delete" | "leave",
+  project: ProjectItem,
+) => {
+  confirmAction.value = { type, id: project.id, name: project.name };
+};
+
+const runConfirmedAction = async () => {
+  if (!confirmAction.value) return;
+  const { type, id } = confirmAction.value;
+  if (type === "delete") {
+    await removeProject(id);
+  } else {
+    await leaveProject(id);
+  }
+  confirmAction.value = null;
 };
 
 const cancelForm = () => {

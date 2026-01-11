@@ -16,6 +16,7 @@ const MESSAGE_MAP: Record<string, string> = {
   "Invalid email": "Некорректный email.",
   "Password must be at least 8 characters":
     "Пароль должен быть не короче 8 символов.",
+  "Only Latin letters are allowed": "Имя может содержать только латиницу.",
   "Missing projectId": "Не указан проект.",
   "Missing id": "Не хватает данных для запроса.",
   "Task not found": "Задача не найдена.",

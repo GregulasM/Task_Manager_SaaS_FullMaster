@@ -43,6 +43,12 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+const latinNamePattern = /^[A-Za-z]+(?:[\s'-][A-Za-z]+)*$/;
+
+function isLatinName(name: string) {
+  return latinNamePattern.test(name);
+}
+
 function pickUserPublic(user: {
   id: string;
   email: string;
@@ -265,6 +271,13 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, statusMessage: "Invalid email" });
       }
 
+      if (!isLatinName(name)) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Only Latin letters are allowed",
+        });
+      }
+
       if (password.length < 8) {
         throw createError({
           statusCode: 400,
@@ -419,7 +432,15 @@ export default defineEventHandler(async (event) => {
     }
 
     const data: any = {};
-    if (name) data.name = name;
+    if (name) {
+      if (!isLatinName(name)) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Only Latin letters are allowed",
+        });
+      }
+      data.name = name;
+    }
 
     if (password) {
       if (password.length < 8) {

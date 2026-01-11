@@ -360,15 +360,15 @@
                 </div>
               </div>
 
-              <div class="mt-4 grid gap-4 xl:grid-cols-2">
-                <UFormField label="Название" :ui="fieldUi" class="w-full">
+              <div class="mt-4 flex flex-col gap-4 xl:flex-row">
+                <UFormField label="Название" :ui="fieldUi" class="flex-1">
                   <UInput
                     v-model.trim="createForm.title"
                     placeholder="Название задачи"
                     :ui="inputUi"
                   />
                 </UFormField>
-                <UFormField label="Описание" :ui="fieldUi" class="w-full">
+                <UFormField label="Описание" :ui="fieldUi" class="flex-1">
                   <UTextarea
                     v-model.trim="createForm.description"
                     placeholder="Описание задачи"
@@ -379,8 +379,14 @@
                 </UFormField>
               </div>
 
-              <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <UFormField label="Исполнитель" :ui="fieldUi" class="w-full">
+              <div
+                class="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap xl:flex-nowrap"
+              >
+                <UFormField
+                  label="Исполнитель"
+                  :ui="fieldUi"
+                  class="flex-1 min-w-[180px]"
+                >
                   <USelectMenu
                     :items="assigneeOptions"
                     :model-value="createForm.assigneeId"
@@ -391,14 +397,22 @@
                     @update:model-value="setCreateAssignee"
                   />
                 </UFormField>
-                <UFormField label="Дедлайн" :ui="fieldUi" class="w-full">
+                <UFormField
+                  label="Дедлайн"
+                  :ui="fieldUi"
+                  class="flex-1 min-w-[180px]"
+                >
                   <UInput
                     v-model="createForm.dueDate"
                     type="date"
                     :ui="inputUi"
                   />
                 </UFormField>
-                <UFormField label="Приоритет" :ui="fieldUi" class="w-full">
+                <UFormField
+                  label="Приоритет"
+                  :ui="fieldUi"
+                  class="flex-1 min-w-[180px]"
+                >
                   <USelectMenu
                     :items="priorityOptions"
                     :model-value="createForm.priority"
@@ -408,7 +422,11 @@
                     @update:model-value="setCreatePriority"
                   />
                 </UFormField>
-                <UFormField label="Статус" :ui="fieldUi" class="w-full">
+                <UFormField
+                  label="Статус"
+                  :ui="fieldUi"
+                  class="flex-1 min-w-[180px]"
+                >
                   <USelectMenu
                     :items="statusOptions"
                     :model-value="createForm.status"
@@ -521,7 +539,7 @@
                         size="xs"
                         icon="i-heroicons-trash"
                         class="rounded-full"
-                        @click="deleteTask(task)"
+                        @click="confirmDeleteTask(task)"
                       />
                     </div>
 
@@ -672,6 +690,15 @@
         </UCard>
       </section>
     </div>
+    <ConfirmDialog
+      v-model="confirmOpen"
+      :title="confirmTitle"
+      :description="confirmDescription"
+      :confirm-text="confirmButtonText"
+      :tone="confirmTone"
+      :loading="confirmLoading"
+      @confirm="runConfirmedAction"
+    />
   </UContainer>
 </template>
 
@@ -768,6 +795,10 @@ type TaskUpdatePayload = {
   assigneeId?: string | null;
 };
 
+type ConfirmAction =
+  | { type: "leave" }
+  | { type: "delete-task"; task: TaskItem };
+
 const NO_ASSIGNEE_VALUE = "__none__";
 
 const myProjects = ref<ProjectCard[]>([]);
@@ -797,6 +828,8 @@ const selectedGroup = ref<ProjectGroup>("my");
 const isBoardOpen = ref(false);
 const actionLoading = ref(false);
 const actionType = ref<"request" | "leave" | null>(null);
+const confirmAction = ref<ConfirmAction | null>(null);
+const deleteTaskLoadingId = ref<string | null>(null);
 const openMembersId = ref<string | null>(null);
 const membersLoadingId = ref<string | null>(null);
 const membersByProject = ref<Record<string, MemberItem[]>>({});
@@ -876,15 +909,15 @@ const hotBadgeClass = (count: number) => {
 };
 
 const inputUi = {
-  base: "bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
 };
 
 const textareaUi = {
-  base: "bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
 };
 
 const selectUi = {
-  base: "bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
 };
 
 const fieldUi = {
@@ -923,6 +956,49 @@ const triggerHeaderRefresh = () => {
 
 const isActionLoading = (type: "request" | "leave") =>
   actionLoading.value && actionType.value === type;
+
+const confirmOpen = computed({
+  get: () => Boolean(confirmAction.value),
+  set: (value) => {
+    if (!value) confirmAction.value = null;
+  },
+});
+
+const confirmTitle = computed(() => {
+  if (!confirmAction.value) return "";
+  if (confirmAction.value.type === "leave") return "Выйти из проекта?";
+  return "Удалить задачу?";
+});
+
+const confirmDescription = computed(() => {
+  if (!confirmAction.value) return "";
+  if (confirmAction.value.type === "leave") {
+    return selectedProject.value?.name
+      ? `Вы потеряете доступ к проекту «${selectedProject.value.name}».`
+      : "Вы потеряете доступ к проекту.";
+  }
+  return confirmAction.value.task
+    ? `Задача «${confirmAction.value.task.title}» будет удалена без возможности восстановления.`
+    : "Задача будет удалена без возможности восстановления.";
+});
+
+const confirmButtonText = computed(() => {
+  if (!confirmAction.value) return "";
+  return confirmAction.value.type === "leave" ? "Выйти" : "Удалить";
+});
+
+const confirmTone = computed(() => {
+  if (!confirmAction.value) return "default";
+  return "danger";
+});
+
+const confirmLoading = computed(() => {
+  if (!confirmAction.value) return false;
+  if (confirmAction.value.type === "leave") return isActionLoading("leave");
+  return confirmAction.value.task
+    ? deleteTaskLoadingId.value === confirmAction.value.task.id
+    : false;
+});
 
 const membersForProject = (projectId: string) =>
   membersByProject.value[projectId] ?? [];
@@ -1040,6 +1116,26 @@ const loadProjects = async () => {
   }
 };
 
+const confirmDeleteTask = (task: TaskItem) => {
+  confirmAction.value = { type: "delete-task", task };
+};
+
+const runConfirmedAction = async () => {
+  const action = confirmAction.value;
+  if (!action) return;
+
+  if (action.type === "leave") {
+    const project = selectedProject.value;
+    if (project) {
+      await leaveProject(project.id);
+    }
+  } else {
+    await deleteTask(action.task);
+  }
+
+  confirmAction.value = null;
+};
+
 const handleMyAction = async () => {
   const project = selectedProject.value;
   if (!project) return;
@@ -1049,7 +1145,7 @@ const handleMyAction = async () => {
     return;
   }
 
-  await leaveProject(project.id);
+  confirmAction.value = { type: "leave" };
 };
 
 const requestAccess = async () => {
@@ -1592,8 +1688,9 @@ const saveEditing = async (task: TaskItem) => {
 
 const deleteTask = async (task: TaskItem) => {
   const projectId = selectedProject.value?.id;
-  if (!projectId) return;
+  if (!projectId || deleteTaskLoadingId.value) return;
 
+  deleteTaskLoadingId.value = task.id;
   boardError.value = "";
 
   try {
@@ -1609,6 +1706,8 @@ const deleteTask = async (task: TaskItem) => {
     syncProjectCounts(projectId);
   } catch (err) {
     boardError.value = getErrorMessage(err, "Не удалось удалить задачу.");
+  } finally {
+    deleteTaskLoadingId.value = null;
   }
 };
 

@@ -3,7 +3,7 @@
     <header class="sticky top-0 z-40">
       <UContainer class="py-2">
         <div
-          class="rounded-[32px] border border-sky-200 bg-white/90 px-6 py-2 shadow-[0_5px_10px_rgba(59,130,246,0.12)]"
+          class="rounded-[32px] overflow-y-scroll max-h-40 border border-sky-200 bg-white/90 px-6 py-2 shadow-[0_5px_10px_rgba(59,130,246,0.12)]"
         >
           <div class="lg:hidden">
             <UCollapsible v-model:open="mobileMenuOpen">
@@ -47,7 +47,7 @@
                       Главная
                     </UButton>
                     <UButton
-                      to="/analytics"
+                      to="/profile/analytics"
                       variant="outline"
                       class="w-full rounded-full border-sky-200 bg-white text-slate-900"
                       :class="navClass(isAnalytics)"
@@ -100,7 +100,7 @@
                         icon="i-heroicons-arrow-right-on-rectangle"
                         :loading="logoutLoading"
                         leading
-                        @click="logout"
+                        @click="requestLogout"
                       >
                         Выйти
                       </UButton>
@@ -151,7 +151,7 @@
                   Главная
                 </UButton>
                 <UButton
-                  to="profile/analytics"
+                  to="/profile/analytics"
                   variant="outline"
                   class="rounded-full flex-1 border-sky-200 bg-white text-slate-900"
                   :class="navClass(isAnalytics)"
@@ -205,7 +205,7 @@
                     icon="i-heroicons-arrow-right-on-rectangle"
                     :loading="logoutLoading"
                     leading
-                    @click="logout"
+                    @click="requestLogout"
                   >
                     Выйти
                   </UButton>
@@ -230,6 +230,16 @@
     <UMain class="px-4 pb-4 pt-4">
       <slot />
     </UMain>
+
+    <ConfirmDialog
+      v-model="confirmLogoutOpen"
+      title="Выйти из аккаунта?"
+      description="Текущая сессия будет завершена, и потребуется повторный вход."
+      confirm-text="Выйти"
+      cancel-text="Остаться"
+      :loading="logoutLoading"
+      @confirm="confirmLogout"
+    />
   </div>
 </template>
 
@@ -250,11 +260,14 @@ const user = ref<UserPublic | null>(null);
 const hotTasks = ref(0);
 const logoutLoading = ref(false);
 const mobileMenuOpen = ref(false);
+const confirmLogoutOpen = ref(false);
 const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
 
 const isHome = computed(() => route.path === "/");
 const isAnalytics = computed(
-  () => route.path === "/analytics" || route.path.startsWith("/analytics/"),
+  () =>
+    route.path === "/profile/analytics" ||
+    route.path.startsWith("/profile/analytics/"),
 );
 
 const isAuthenticated = computed(() => Boolean(user.value?.id));
@@ -335,6 +348,16 @@ const logout = async () => {
   } finally {
     logoutLoading.value = false;
   }
+};
+
+const requestLogout = () => {
+  if (logoutLoading.value) return;
+  confirmLogoutOpen.value = true;
+};
+
+const confirmLogout = async () => {
+  await logout();
+  confirmLogoutOpen.value = false;
 };
 
 onMounted(() => {
