@@ -55,7 +55,10 @@
           >
             {{ loading ? "Sending..." : "Create test user" }}
           </button>
-          <span class="text-xs text-slate-400">POST /api/user</span>
+          <span
+            class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 text-slate-400"
+            >POST /api/user</span
+          >
         </div>
 
         <p

@@ -13,7 +13,7 @@
         class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
         @click="onBackdrop"
       >
-        <div class="absolute inset-0 bg-slate-950/90" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-slate-950/20" aria-hidden="true"></div>
 
         <div
           class="relative w-full max-w-md rounded-3xl border border-sky-200 bg-white/95 shadow-2xl"
@@ -32,7 +32,9 @@
                 <p class="text-sm uppercase tracking-widest text-slate-500">
                   Подтверждение
                 </p>
-                <h3 class="text-lg font-semibold text-slate-900">
+                <h3
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                >
                   {{ title }}
                 </h3>
                 <p v-if="description" class="text-sm text-slate-600">

@@ -16,7 +16,9 @@
                       name="i-heroicons-sparkles"
                       class="h-4 w-4 text-sky-600"
                     />
-                    <p class="text-sky-600 font-bold">
+                    <p
+                      class="text-sky-600 font-bold text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10"
+                    >
                       FullMaster: <span class="text-black">Task Manager</span>
                     </p>
                   </div>
@@ -39,7 +41,7 @@
                     <UButton
                       to="/"
                       variant="outline"
-                      class="w-full rounded-full border-sky-200 bg-white text-slate-900"
+                      class="w-full rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                       :class="navClass(isHome)"
                       icon="i-heroicons-home"
                       leading
@@ -49,7 +51,7 @@
                     <UButton
                       to="/profile/analytics"
                       variant="outline"
-                      class="w-full rounded-full border-sky-200 bg-white text-slate-900"
+                      class="w-full rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                       :class="navClass(isAnalytics)"
                       icon="i-heroicons-chart-bar"
                       leading
@@ -67,7 +69,9 @@
                         :text="userInitials"
                         class="bg-white"
                       />
-                      <div class="text-xs leading-snug">
+                      <div
+                        class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 leading-snug"
+                      >
                         <p class="font-semibold text-slate-900">
                           {{ userName }}
                         </p>
@@ -79,7 +83,7 @@
                     <div class="flex flex-wrap items-center gap-3">
                       <UBadge
                         :class="hotTasksBadgeClass"
-                        class="rounded-full border px-3 py-1 text-xs font-semibold"
+                        class="rounded-full border px-3 py-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
                       >
                         {{ hotTasksLabel }}
                       </UBadge>
@@ -87,7 +91,7 @@
                         v-if="isAuthenticated"
                         to="/profile"
                         variant="outline"
-                        class="rounded-full border-sky-200 bg-white text-slate-900"
+                        class="rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                         icon="i-heroicons-user-circle"
                         leading
                       >
@@ -96,7 +100,7 @@
                       <UButton
                         v-if="isAuthenticated"
                         variant="solid"
-                        class="rounded-full bg-sky-200 text-slate-900"
+                        class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                         icon="i-heroicons-arrow-right-on-rectangle"
                         :loading="logoutLoading"
                         leading
@@ -108,7 +112,7 @@
                         v-else
                         to="/auth/login"
                         variant="solid"
-                        class="rounded-full bg-sky-200 text-slate-900"
+                        class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                         icon="i-heroicons-arrow-right-on-rectangle"
                         leading
                       >
@@ -133,7 +137,9 @@
                     name="i-heroicons-sparkles"
                     class="h-4 w-4 text-sky-600"
                   />
-                  <p class="text-sky-600 font-bold">
+                  <p
+                    class="text-sky-600 font-bold text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10"
+                  >
                     FullMaster: <span class="text-black">Task Manager</span>
                   </p>
                 </div>
@@ -143,7 +149,7 @@
                 <UButton
                   to="/"
                   variant="outline"
-                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900"
+                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   :class="navClass(isHome)"
                   icon="i-heroicons-home"
                   leading
@@ -153,7 +159,7 @@
                 <UButton
                   to="/profile/analytics"
                   variant="outline"
-                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900"
+                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   :class="navClass(isAnalytics)"
                   icon="i-heroicons-chart-bar"
                   leading
@@ -171,7 +177,9 @@
                   class="flex items-center w-full gap-3 rounded-full border border-sky-200 bg-sky-50/70 px-4 py-2"
                 >
                   <UAvatar size="lg" :text="userInitials" class="bg-white" />
-                  <div class="text-xs leading-snug">
+                  <div
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 leading-snug"
+                  >
                     <p class="font-semibold text-slate-900">
                       {{ userName }}
                     </p>
@@ -183,7 +191,7 @@
                 <div class="flex items-center gap-3">
                   <UBadge
                     :class="hotTasksBadgeClass"
-                    class="rounded-full border px-3 py-1 text-xs font-semibold"
+                    class="rounded-full border px-3 py-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
                   >
                     {{ hotTasksLabel }}
                   </UBadge>
@@ -192,7 +200,7 @@
                     v-if="isAuthenticated"
                     to="/profile"
                     variant="outline"
-                    class="rounded-full border-sky-200 bg-white text-slate-900"
+                    class="rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                     icon="i-heroicons-user-circle"
                     leading
                   >
@@ -201,7 +209,7 @@
                   <UButton
                     v-if="isAuthenticated"
                     variant="solid"
-                    class="rounded-full bg-sky-200 text-slate-900"
+                    class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                     icon="i-heroicons-arrow-right-on-rectangle"
                     :loading="logoutLoading"
                     leading
@@ -213,7 +221,7 @@
                     v-else
                     to="/auth/login"
                     variant="solid"
-                    class="rounded-full bg-sky-200 text-slate-900"
+                    class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                     icon="i-heroicons-arrow-right-on-rectangle"
                     leading
                   >
@@ -239,6 +247,7 @@
       cancel-text="Остаться"
       :loading="logoutLoading"
       @confirm="confirmLogout"
+      class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10"
     />
   </div>
 </template>

@@ -5,27 +5,31 @@
         class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
       >
         <div class="space-y-2">
-          <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+          <p
+            class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+          >
             Мои проекты
           </p>
-          <h2 class="text-2xl font-semibold text-slate-900">
+          <h2
+            class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+          >
             Управление проектами
           </h2>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <UBadge
-            class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+            class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
           >
             {{ projects.length }} проектов
           </UBadge>
           <UBadge
             v-if="listLoading"
-            class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
+            class="rounded-full border border-sky-200 bg-sky-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
           >
             Загрузка
           </UBadge>
           <UButton
-            class="rounded-full bg-sky-200 text-slate-900"
+            class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
             icon="i-heroicons-plus"
             leading
             :disabled="formMode !== null || listLoading"
@@ -70,7 +74,7 @@
 
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <UButton
-            class="rounded-full bg-sky-200 text-slate-900"
+            class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
             icon="i-heroicons-check"
             leading
             :loading="formLoading"
@@ -81,7 +85,7 @@
           </UButton>
           <UButton
             variant="outline"
-            class="rounded-full border-sky-200 text-slate-900"
+            class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
             icon="i-heroicons-x-mark"
             leading
             :disabled="formLoading"
@@ -93,10 +97,13 @@
 
         <p
           v-if="formMode === 'edit'"
-          class="mt-3 text-center text-xs text-slate-600"
+          class="mt-3 text-center text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
         >
           Вы редактируете
-          <span class="font-semibold text-slate-900">{{ editingName }}</span>
+          <span
+            class="font-semibold text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+            >{{ editingName }}</span
+          >
         </p>
       </div>
 
@@ -127,23 +134,31 @@
           >
             <div class="flex-1">
               <p
-                class="max-w-[32ch] truncate text-sm font-semibold text-slate-900"
+                class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
                 :title="project.name"
               >
                 {{ project.name }}
               </p>
               <p
-                class="max-w-[32ch] truncate text-xs text-slate-600"
+                class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                 :title="project.description || 'Без описания'"
               >
                 {{ project.description || "Без описания" }}
               </p>
-              <p v-if="!canManage(project)" class="mt-1 text-xs text-slate-600">
+              <p
+                v-if="!canManage(project)"
+                class="mt-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+              >
                 Владелец:
-                <span class="font-semibold text-slate-900">
+                <span
+                  class="font-semibold text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                >
                   {{ ownerLabel(project) }}
                 </span>
-                <span v-if="project.ownerEmail" class="text-slate-500">
+                <span
+                  v-if="project.ownerEmail"
+                  class="text-slate-500 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                >
                   · {{ project.ownerEmail }}
                 </span>
               </p>
@@ -155,7 +170,7 @@
               <template v-if="canManage(project)">
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-user-plus"
                   leading
                   @click="toggleInvite(project.id)"
@@ -164,7 +179,7 @@
                 </UButton>
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-user-group"
                   leading
                   @click="toggleMembers(project.id)"
@@ -173,7 +188,7 @@
                 </UButton>
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-pencil-square"
                   leading
                   @click="startEdit(project)"
@@ -182,7 +197,7 @@
                 </UButton>
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-trash"
                   leading
                   :loading="deleteLoadingId === project.id"
@@ -195,7 +210,7 @@
               <template v-else>
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-user-group"
                   leading
                   @click="toggleMembers(project.id)"
@@ -204,7 +219,7 @@
                 </UButton>
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-arrow-left-on-rectangle"
                   leading
                   :loading="leaveLoadingId === project.id"
@@ -224,16 +239,20 @@
             <div
               class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 p-3"
             >
-              <p class="text-sm text-slate-700">Участники:</p>
+              <p
+                class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
+              >
+                Участники:
+              </p>
               <div
                 v-if="membersLoadingId === project.id"
-                class="text-xs text-slate-600"
+                class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
               >
                 Загрузка участников...
               </div>
               <div
                 v-else-if="membersError[project.id]"
-                class="text-xs text-rose-600"
+                class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-rose-600"
               >
                 {{ membersError[project.id] }}
               </div>
@@ -243,27 +262,32 @@
                     hasMembersLoaded(project.id) &&
                     !membersForProject(project.id).length
                   "
-                  class="text-xs text-slate-600"
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                 >
                   Пока участников нет.
                 </div>
                 <div
                   v-for="member in membersForProject(project.id)"
                   :key="member.id"
-                  class="flex items-center justify-between gap-2 text-xs text-slate-700"
+                  class="flex items-center justify-between gap-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
                 >
                   <div class="min-w-0">
-                    <span class="truncate font-semibold text-slate-900">
+                    <span
+                      class="truncate font-semibold text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    >
                       {{ member.name }}
                     </span>
-                    <span v-if="member.email" class="truncate text-slate-500">
+                    <span
+                      v-if="member.email"
+                      class="truncate text-slate-500 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    >
                       · {{ member.email }}
                     </span>
                   </div>
                   <div class="flex items-center gap-2">
                     <UBadge
                       v-if="member.role === 'OWNER'"
-                      class="rounded-full border border-sky-200 bg-white text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
+                      class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-slate-700"
                     >
                       Owner
                     </UBadge>
@@ -271,7 +295,7 @@
                       v-if="canRemoveMember(project, member)"
                       variant="outline"
                       size="xs"
-                      class="rounded-full border-sky-200 text-slate-900"
+                      class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                       icon="i-heroicons-user-minus"
                       :loading="isRemovingMember(project.id, member.id)"
                       :disabled="isRemovingMember(project.id, member.id)"
@@ -299,7 +323,7 @@
             </UFormField>
             <div class="mt-3 flex flex-wrap items-center gap-3">
               <UButton
-                class="rounded-full bg-sky-200 text-slate-900"
+                class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-paper-airplane"
                 leading
                 :loading="inviteLoading"
@@ -310,7 +334,7 @@
               </UButton>
               <UButton
                 variant="outline"
-                class="rounded-full border-sky-200 text-slate-900"
+                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-x-mark"
                 leading
                 :disabled="inviteLoading"
@@ -319,10 +343,16 @@
                 Отмена
               </UButton>
             </div>
-            <p v-if="inviteError" class="mt-2 text-xs text-rose-600">
+            <p
+              v-if="inviteError"
+              class="mt-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-rose-600"
+            >
               {{ inviteError }}
             </p>
-            <p v-if="inviteSuccess" class="mt-2 text-xs text-emerald-700">
+            <p
+              v-if="inviteSuccess"
+              class="mt-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-emerald-700"
+            >
               {{ inviteSuccess }}
             </p>
           </div>
@@ -331,7 +361,7 @@
 
       <div
         v-if="!listLoading && !projects.length"
-        class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-center text-sm text-slate-600"
+        class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-center text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
       >
         Пока проектов нет.
       </div>
@@ -432,15 +462,16 @@ const form = reactive({
 });
 
 const inputUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
 };
 
 const textareaUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
 };
 
 const fieldUi = {
-  label: "text-slate-900 font-medium",
+  label:
+    "text-slate-900 font-medium text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12",
 };
 
 const confirmOpen = computed({

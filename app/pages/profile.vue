@@ -6,13 +6,19 @@
           <template #header>
             <div class="flex items-center justify-between">
               <div class="space-y-1">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+                <p
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 uppercase tracking-[0.3em] text-slate-600"
+                >
                   Профиль
                 </p>
-                <h2 class="text-lg font-semibold text-slate-900">Разделы</h2>
+                <h2
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                >
+                  Разделы
+                </h2>
               </div>
               <UBadge
-                class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
+                class="rounded-full border border-sky-200 bg-sky-100 text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
               >
                 Навигация
               </UBadge>

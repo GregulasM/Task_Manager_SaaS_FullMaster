@@ -5,21 +5,25 @@
         class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
       >
         <div class="space-y-2">
-          <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+          <p
+            class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+          >
             Аналитика
           </p>
-          <h2 class="text-2xl font-semibold text-slate-900">
+          <h2
+            class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+          >
             График задач по статусам
           </h2>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <UBadge
-            class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+            class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
           >
             {{ totalTasks }} задач
           </UBadge>
           <UBadge
-            class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
+            class="rounded-full border border-sky-200 bg-sky-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
           >
             {{ projectsCount }} проектов
           </UBadge>
@@ -55,11 +59,13 @@
       <div v-else class="space-y-6">
         <div class="rounded-[28px] border border-sky-200 bg-white/80 p-6">
           <div class="flex items-center justify-between">
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+            <p
+              class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+            >
               График
             </p>
             <UBadge
-              class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+              class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
             >
               Обновлено
             </UBadge>
@@ -67,14 +73,16 @@
 
           <div
             v-if="!totalTasks"
-            class="mt-4 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-center text-sm text-slate-600"
+            class="mt-4 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-center text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
           >
             Пока нет задач для аналитики.
           </div>
 
           <div v-else class="mt-6 space-y-4">
             <div v-for="item in chartItems" :key="item.id" class="space-y-2">
-              <div class="flex items-center justify-between text-xs">
+              <div
+                class="flex items-center justify-between text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+              >
                 <span class="text-slate-600">{{ item.label }}</span>
                 <span class="font-semibold text-slate-900">
                   {{ item.count }}
@@ -92,7 +100,7 @@
         </div>
 
         <div
-          class="rounded-2xl border border-sky-200 bg-white/80 px-4 py-4 text-sm text-slate-700"
+          class="rounded-2xl border border-sky-200 bg-white/80 px-4 py-4 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
         >
           <span class="font-semibold text-slate-900">
             Количество просроченных задач:

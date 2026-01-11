@@ -5,22 +5,26 @@
         class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
       >
         <div class="space-y-2">
-          <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+          <p
+            class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+          >
             Ваши приглашения
           </p>
-          <h2 class="text-2xl font-semibold text-slate-900">
+          <h2
+            class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+          >
             Приглашения в проекты
           </h2>
         </div>
         <div class="flex items-center gap-2">
           <UBadge
-            class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+            class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
           >
             {{ invitations.length }} шт.
           </UBadge>
           <UBadge
             v-if="loading"
-            class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
+            class="rounded-full border border-sky-200 bg-sky-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
           >
             Загрузка
           </UBadge>
@@ -63,20 +67,20 @@
             <div class="min-w-0 xl:w-[320px] xl:shrink-0">
               <div class="flex flex-wrap items-center gap-2">
                 <p
-                  class="max-w-[32ch] truncate text-sm font-semibold text-slate-900"
+                  class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
                   :title="invite.projectName"
                 >
                   {{ invite.projectName }}
                 </p>
                 <UBadge
                   v-if="invite.kind === 'request'"
-                  class="rounded-full border border-amber-200 bg-amber-100 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-800"
+                  class="rounded-full border border-amber-200 bg-amber-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-amber-800"
                 >
                   Желает войти
                 </UBadge>
               </div>
               <p
-                class="max-w-[32ch] truncate text-xs text-slate-600"
+                class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                 :title="invite.projectDescription"
               >
                 {{ invite.projectDescription }}
@@ -85,7 +89,7 @@
 
             <div class="flex flex-wrap items-center gap-2 xl:shrink-0">
               <UButton
-                class="rounded-full bg-sky-200 text-slate-900"
+                class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-check-circle"
                 leading
                 :loading="isActionLoading(invite.id, 'accept')"
@@ -96,7 +100,7 @@
               </UButton>
               <UButton
                 variant="outline"
-                class="rounded-full border-sky-200 text-slate-900"
+                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-x-circle"
                 leading
                 :loading="isActionLoading(invite.id, 'decline')"
@@ -111,7 +115,9 @@
               class="flex items-center gap-4 xl:ml-auto xl:w-[220px] xl:shrink-0"
             >
               <div class="hidden h-10 w-px bg-sky-200 xl:block"></div>
-              <div class="min-w-0 text-xs leading-snug text-slate-600">
+              <div
+                class="min-w-0 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 leading-snug text-slate-600"
+              >
                 <p class="truncate font-semibold text-slate-900">
                   {{ invite.inviterName }}
                 </p>
@@ -124,12 +130,16 @@
 
       <div
         v-if="!loading && !invitations.length"
-        class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-center text-sm text-slate-600"
+        class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-center text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
       >
         Пока новых приглашений нет.
       </div>
 
-      <div class="text-center text-xs text-slate-500">...</div>
+      <div
+        class="text-center text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-500"
+      >
+        ...
+      </div>
     </div>
   </UCard>
 </template>

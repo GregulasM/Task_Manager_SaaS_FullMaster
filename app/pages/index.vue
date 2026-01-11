@@ -6,14 +6,20 @@
           <template #header>
             <div class="flex items-center justify-between">
               <div class="space-y-1">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+                <p
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                >
                   Навигация
                 </p>
-                <h2 class="text-lg font-semibold text-slate-900">Проекты</h2>
+                <h2
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                >
+                  Проекты
+                </h2>
               </div>
               <UBadge
                 v-if="loading"
-                class="rounded-full border border-sky-200 bg-sky-100 text-xs font-semibold text-slate-900"
+                class="rounded-full border border-sky-200 bg-sky-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
               >
                 Загрузка
               </UBadge>
@@ -33,13 +39,13 @@
             <template #my>
               <div
                 v-if="loading"
-                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-xs text-slate-600"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-6 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
               >
                 Загрузка проектов...
               </div>
               <div
                 v-else-if="!myProjects.length"
-                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
               >
                 Пока нет ваших проектов.
               </div>
@@ -54,16 +60,20 @@
                   @click="selectProject(project, 'my')"
                 >
                   <div class="flex-1">
-                    <p class="text-sm font-semibold text-slate-900">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+                    >
                       {{ project.name }}
                     </p>
-                    <p class="text-xs text-slate-600">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                    >
                       {{ project.description }}
                     </p>
                   </div>
                   <div class="ml-3 flex items-center gap-2">
                     <UBadge
-                      class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+                      class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                     >
                       {{ project.tasksCount }}
                     </UBadge>
@@ -75,13 +85,13 @@
             <template #other>
               <div
                 v-if="loading"
-                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
               >
                 Загрузка проектов...
               </div>
               <div
                 v-else-if="!otherProjects.length"
-                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-xs text-slate-600"
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
               >
                 Пока нет других проектов.
               </div>
@@ -96,16 +106,20 @@
                   @click="selectProject(project, 'other')"
                 >
                   <div class="flex-1">
-                    <p class="text-sm font-semibold text-slate-900">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+                    >
                       {{ project.name }}
                     </p>
-                    <p class="text-xs text-slate-600">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                    >
                       {{ project.description }}
                     </p>
                   </div>
                   <div class="ml-3 flex items-center gap-2">
                     <UBadge
-                      class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+                      class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                     >
                       {{ project.tasksCount }}
                     </UBadge>
@@ -135,23 +149,27 @@
               class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
             >
               <div class="space-y-2">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+                <p
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                >
                   Детали проекта
                 </p>
-                <h2 class="text-2xl font-semibold text-slate-900">
+                <h2
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                >
                   {{ selectedProject.name }}
                 </h2>
               </div>
 
               <div class="flex flex-wrap items-center gap-2">
                 <UBadge
-                  class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+                  class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                 >
                   {{ selectedProject.tasksCount }} задач
                 </UBadge>
                 <UBadge
                   :class="hotBadgeClass(selectedProject.hotTasksCount)"
-                  class="rounded-full border text-xs font-semibold"
+                  class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
                 >
                   Горящие: {{ selectedProject.hotTasksCount }} шт.
                 </UBadge>
@@ -160,7 +178,9 @@
           </template>
 
           <div class="flex flex-1 flex-col gap-4">
-            <p class="text-sm text-slate-700">
+            <p
+              class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
+            >
               {{ selectedProject.description }}
             </p>
             <UAlert
@@ -178,16 +198,20 @@
               <div
                 class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3"
               >
-                <p class="text-sm text-slate-700">Участники:</p>
+                <p
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
+                >
+                  Участники:
+                </p>
                 <div
                   v-if="membersLoadingId === selectedProject.id"
-                  class="text-xs text-slate-600"
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                 >
                   Загрузка участников...
                 </div>
                 <div
                   v-else-if="membersError[selectedProject.id]"
-                  class="text-xs text-rose-600"
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-rose-600"
                 >
                   {{ membersError[selectedProject.id] }}
                 </div>
@@ -197,26 +221,31 @@
                       hasMembersLoaded(selectedProject.id) &&
                       !membersForProject(selectedProject.id).length
                     "
-                    class="text-xs text-slate-600"
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                   >
                     Пока участников нет.
                   </div>
                   <div
                     v-for="member in membersForProject(selectedProject.id)"
                     :key="member.id"
-                    class="flex items-center justify-between text-xs text-slate-700"
+                    class="flex items-center justify-between text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
                   >
                     <div class="min-w-0">
-                      <span class="truncate font-semibold text-slate-900">
+                      <span
+                        class="truncate font-semibold text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                      >
                         {{ member.name }}
                       </span>
-                      <span v-if="member.email" class="truncate text-slate-500">
+                      <span
+                        v-if="member.email"
+                        class="truncate text-slate-500 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                      >
                         · {{ member.email }}
                       </span>
                     </div>
                     <UBadge
                       v-if="member.role === 'OWNER'"
-                      class="rounded-full border border-sky-200 bg-white text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700"
+                      class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-slate-700"
                     >
                       Owner
                     </UBadge>
@@ -231,7 +260,7 @@
               class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <UButton
-                class="rounded-full bg-sky-200 text-slate-900"
+                class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-arrow-right-circle"
                 leading
                 @click="openBoard"
@@ -241,7 +270,7 @@
               <UButton
                 v-if="selectedGroup === 'my'"
                 variant="outline"
-                class="rounded-full border-sky-200 text-slate-900"
+                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-user-group"
                 leading
                 @click="toggleMembers(selectedProject.id)"
@@ -251,7 +280,7 @@
               <UButton
                 v-if="selectedGroup === 'my'"
                 variant="outline"
-                class="rounded-full border-sky-200 text-slate-900"
+                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-trash"
                 leading
                 :loading="isActionLoading('leave')"
@@ -263,7 +292,7 @@
               <UButton
                 v-else
                 variant="outline"
-                class="rounded-full border-sky-200 text-slate-900"
+                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                 icon="i-heroicons-user-plus"
                 leading
                 :loading="isActionLoading('request')"
@@ -286,29 +315,33 @@
               class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
             >
               <div class="space-y-2">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+                <p
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                >
                   Kanban
                 </p>
-                <h2 class="text-2xl font-semibold text-slate-900">
+                <h2
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                >
                   {{ selectedProject.name }}
                 </h2>
               </div>
 
               <div class="flex flex-wrap items-center gap-3">
                 <UBadge
-                  class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+                  class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                 >
                   Задач: {{ boardTasksTotal }}
                 </UBadge>
                 <UBadge
                   :class="hotBadgeClass(boardHotTotal)"
-                  class="rounded-full border text-xs font-semibold"
+                  class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
                 >
                   Горящие: {{ boardHotTotal }}
                 </UBadge>
                 <UButton
                   variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900"
+                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                   icon="i-heroicons-arrow-left"
                   leading
                   @click="closeBoard"
@@ -333,22 +366,26 @@
                 class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
               >
                 <div class="space-y-1">
-                  <p class="text-xs uppercase tracking-[0.3em] text-slate-600">
+                  <p
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                  >
                     Новая задача
                   </p>
-                  <h3 class="text-lg font-semibold text-slate-900">
+                  <h3
+                    class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                  >
                     Создание карточки
                   </h3>
                 </div>
                 <div class="flex items-center gap-2">
                   <UBadge
                     v-if="createLoading"
-                    class="rounded-full border border-sky-200 bg-white text-xs font-semibold text-slate-700"
+                    class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                   >
                     Создаем
                   </UBadge>
                   <UButton
-                    class="rounded-full bg-sky-200 text-slate-900"
+                    class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                     icon="i-heroicons-plus"
                     leading
                     :loading="createLoading"
@@ -466,11 +503,13 @@
                 @drop.prevent="handleDrop(column.id, 'end')"
               >
                 <div class="flex items-center justify-between">
-                  <h3 class="text-sm font-semibold text-slate-900">
+                  <h3
+                    class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                  >
                     {{ column.title }}
                   </h3>
                   <UBadge
-                    class="rounded-full border border-sky-200 bg-sky-50 text-xs font-semibold text-slate-700"
+                    class="rounded-full border border-sky-200 bg-sky-50 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                   >
                     {{ column.tasks.length }}
                   </UBadge>
@@ -479,7 +518,7 @@
                 <div class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
                   <div
                     v-if="!column.tasks.length"
-                    class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-3 py-3 text-xs text-slate-600"
+                    class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-3 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                   >
                     Пока задач нет.
                   </div>
@@ -501,7 +540,7 @@
                     <div class="flex items-start justify-between gap-2">
                       <div class="flex-1">
                         <p
-                          class="text-[10px] uppercase tracking-[0.3em] text-slate-500"
+                          class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-500"
                         >
                           Название
                         </p>
@@ -518,7 +557,7 @@
                         </div>
                         <p
                           v-else
-                          class="flex cursor-text items-center gap-1 text-sm font-semibold text-slate-900"
+                          class="flex cursor-text items-center gap-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
                           @dblclick="startEditing(task, 'title')"
                         >
                           <span class="truncate">{{ task.title }}</span>
@@ -545,7 +584,7 @@
 
                     <div>
                       <p
-                        class="text-[10px] uppercase tracking-[0.3em] text-slate-500"
+                        class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-500"
                       >
                         Описание
                       </p>
@@ -562,14 +601,16 @@
                       </div>
                       <p
                         v-else
-                        class="cursor-text text-xs text-slate-600"
+                        class="cursor-text text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                         @dblclick="startEditing(task, 'description')"
                       >
                         {{ task.description || "Без описания" }}
                       </p>
                     </div>
 
-                    <div class="grid gap-2 text-xs">
+                    <div
+                      class="grid gap-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    >
                       <div class="grid grid-cols-[1fr,auto] items-center gap-2">
                         <span class="text-slate-500">Исполнитель:</span>
                         <div
@@ -609,7 +650,7 @@
                           <button
                             v-else
                             type="button"
-                            class="w-full rounded-full border border-sky-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700"
+                            class="w-full rounded-full border border-sky-200 bg-white px-2 py-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
                             @click="startEditing(task, 'dueDate')"
                           >
                             {{ formatDueDate(task.dueDate) }}
@@ -652,14 +693,14 @@
 
                     <div class="flex flex-wrap items-center gap-2 pt-4">
                       <UBadge
-                        class="rounded-full border text-[10px] font-semibold uppercase tracking-[0.2em]"
+                        class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em]"
                         :class="priorityBadgeClass(task.priority)"
                       >
                         {{ priorityLabels[task.priority] }}
                       </UBadge>
                       <UBadge
                         v-if="task.isOverdue"
-                        class="rounded-full border border-rose-200 bg-rose-100 text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-800"
+                        class="rounded-full border border-rose-200 bg-rose-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-rose-800"
                       >
                         Просрочено
                       </UBadge>
@@ -680,10 +721,14 @@
               name="i-heroicons-rectangle-stack"
               class="h-10 w-10 text-sky-300"
             />
-            <p class="text-lg font-semibold text-slate-900">
+            <p
+              class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+            >
               Выберите проект слева
             </p>
-            <p class="text-sm text-slate-600">
+            <p
+              class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+            >
               Здесь появится доска и подробности проекта.
             </p>
           </div>
@@ -909,19 +954,20 @@ const hotBadgeClass = (count: number) => {
 };
 
 const inputUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
 };
 
 const textareaUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
 };
 
 const selectUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 focus:ring-2 focus:ring-sky-200",
+  base: "w-full bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
 };
 
 const fieldUi = {
-  label: "text-slate-900 font-medium",
+  label:
+    "text-slate-900 font-medium text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12",
 };
 
 const statusOptions = [
