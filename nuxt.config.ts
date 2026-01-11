@@ -1,3 +1,16 @@
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const prismaTraceInclude = [
+  require.resolve("@prisma/client"),
+  require.resolve("@prisma/client/runtime/client"),
+  require.resolve("@prisma/client/runtime/query_compiler_bg.postgresql.mjs"),
+  require.resolve("@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.mjs"),
+  require.resolve("@prisma/adapter-pg"),
+  require.resolve("@prisma/driver-adapter-utils"),
+  require.resolve("@prisma/client-runtime-utils"),
+];
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
@@ -17,6 +30,9 @@ export default defineNuxtConfig({
       "",
   },
   nitro: {
+    externals: {
+      traceInclude: prismaTraceInclude,
+    },
     rollupConfig: {
       external: [/^@prisma\//, /\.wasm$/],
     },

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bunx prisma migrate deploy && bunx nuxt build",
+    "build": "bunx prisma migrate deploy && bunx nuxt build && bun scripts/copy-prisma.mjs",
     "dev": "bunx nuxt dev",
     "preview": "bunx nuxt preview",
     "postinstall": "bunx nuxt prepare && bunx prisma generate --schema=prisma/schema.prisma",
