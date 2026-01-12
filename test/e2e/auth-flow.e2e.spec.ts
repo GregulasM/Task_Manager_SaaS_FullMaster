@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { setup, createPage, $fetch } from "@nuxt/test-utils/e2e"; // :contentReference[oaicite:3]{index=3}
+import { setup, createPage, $fetch, url } from "@nuxt/test-utils/e2e"; // :contentReference[oaicite:3]{index=3}
 
 type TestUser = {
   name: string;
@@ -46,7 +46,7 @@ async function deleteMeIfPossible(page: any) {
 }
 
 async function registerViaUI(page: any, user: TestUser) {
-  await page.goto("/auth/register");
+  await page.goto(url("/auth/register"));
 
   await page.getByPlaceholder("Как вас зовут").fill(user.name);
   await page.getByPlaceholder("you@example.com").fill(user.email);
@@ -92,13 +92,14 @@ function statusFromFetchError(err: any) {
 
 describe("auth: register/login/redirects", async () => {
   // Включаем browser-e2e (Playwright) через Nuxt Test Utils :contentReference[oaicite:4]{index=4}
-  await setup({ browser: true });
+  await setup({ browser: true, runner: "vitest" });
 
   it.each([
     ["simple", { name: "John", email: uniqEmail("john") }],
     ["with space", { name: "John Doe", email: uniqEmail("john.doe") }],
     ["with apostrophe", { name: "O'Neil", email: uniqEmail("oneil") }],
     ["with hyphen", { name: "Mary-Jane", email: uniqEmail("maryjane") }],
+    ["with cyrillic", { name: "Иван Петров", email: uniqEmail("ivan") }],
     [
       "email case normalize",
       { name: "Alice", email: `ALICE.${Date.now()}@Example.COM` },
@@ -136,19 +137,21 @@ describe("auth: register/login/redirects", async () => {
     },
   );
 
-  it("UI: registration blocks non-latin name", async () => {
+  it("UI: registration blocks invalid name", async () => {
     const page = await createPage("/");
 
     try {
-      await page.goto("/auth/register");
-      await page.getByPlaceholder("Как вас зовут").fill("Иван");
+      await page.goto(url("/auth/register"));
+      await page.getByPlaceholder("Как вас зовут").fill("John123");
       await page.getByPlaceholder("you@example.com").fill(uniqEmail("ivan"));
       await page.getByPlaceholder("Минимум 8 символов").fill("StrongPass123!");
 
       await page.getByRole("button", { name: "Зарегистрироваться" }).click();
 
       const visible = await page
-        .getByText("Имя может содержать только латиницу.")
+        .getByText(
+          "Имя может содержать только буквы, пробелы, апострофы и дефисы.",
+        )
         .isVisible();
       expect(visible).toBe(true);
     } finally {
@@ -160,7 +163,7 @@ describe("auth: register/login/redirects", async () => {
     const page = await createPage("/");
 
     try {
-      await page.goto("/auth/register");
+      await page.goto(url("/auth/register"));
       await page.getByPlaceholder("Как вас зовут").fill("John");
       await page
         .getByPlaceholder("you@example.com")
@@ -208,14 +211,14 @@ describe("auth: register/login/redirects", async () => {
       expect(statusFromFetchError(e)).toBe(400);
     }
 
-    // non-latin name
+    // invalid name
     try {
       await $fetch("/api/user", {
         method: "POST",
         body: {
           action: "register",
           email: uniqEmail("apibadname"),
-          name: "Иван",
+          name: "John123",
           password: "StrongPass123!",
         },
       });
@@ -303,7 +306,7 @@ describe("auth: register/login/redirects", async () => {
     const UNAUTH_TARGET = "/main"; // по твоему описанию
 
     try {
-      await page.goto(PROTECTED_ROUTE);
+      await page.goto(url(PROTECTED_ROUTE));
       await page.waitForTimeout(150); // даём middleware дернуть redirect
       const path = new URL(page.url()).pathname;
 
@@ -337,7 +340,7 @@ describe("auth: register/login/redirects", async () => {
       });
       expect(login.status).toBe(200);
 
-      await page.goto(PROTECTED_ROUTE);
+      await page.goto(url(PROTECTED_ROUTE));
       await page.waitForTimeout(150);
 
       const path = new URL(page.url()).pathname;

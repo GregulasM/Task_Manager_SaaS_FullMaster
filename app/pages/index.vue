@@ -1554,6 +1554,7 @@
 <script setup lang="ts">
 import { humanizeError } from "~/utils/human-error";
 definePageMeta({ layout: "default" });
+const route = useRoute();
 
 type ProjectCard = {
   id: string;
@@ -1819,6 +1820,25 @@ const openProjectDetails = (project: ProjectCard, group: ProjectGroup) => {
     return;
   }
   projectModalOpen.value = true;
+};
+
+const openProjectFromQuery = () => {
+  const projectId =
+    typeof route.query.projectId === "string" ? route.query.projectId : "";
+  if (!projectId) return;
+
+  const fromMy = myProjects.value.find((project) => project.id === projectId);
+  if (fromMy) {
+    openProjectDetails(fromMy, "my");
+    return;
+  }
+
+  const fromOther = otherProjects.value.find(
+    (project) => project.id === projectId,
+  );
+  if (fromOther) {
+    openProjectDetails(fromOther, "other");
+  }
 };
 
 onMounted(() => {
@@ -3036,8 +3056,9 @@ onBeforeUnmount(() => {
   }
 });
 
-onMounted(() => {
-  loadProjects();
+onMounted(async () => {
+  await loadProjects();
+  openProjectFromQuery();
 });
 </script>
 

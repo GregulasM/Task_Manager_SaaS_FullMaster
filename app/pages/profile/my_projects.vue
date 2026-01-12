@@ -148,12 +148,24 @@
             class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between"
           >
             <div class="flex-1">
-              <p
-                class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
-                :title="project.name"
-              >
-                {{ project.name }}
-              </p>
+              <div class="flex items-start justify-between gap-3">
+                <p
+                  class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+                  :title="project.name"
+                >
+                  {{ project.name }}
+                </p>
+                <UButton
+                  :class="[iconButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
+                  size="xs"
+                  square
+                  icon="i-heroicons-folder-open"
+                  aria-label="Открыть проект"
+                  @click="openProject(project)"
+                />
+              </div>
               <p
                 class="max-w-[32ch] truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                 :title="project.description || 'Без описания'"
@@ -491,6 +503,7 @@ const bodyTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
 
 const baseButtonClass = `rounded-full border px-3 py-1.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 cursor-pointer ${bodyTextClass}`;
+const iconButtonClass = `rounded-full border p-2 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 cursor-pointer ${bodyTextClass}`;
 
 const primaryButtonClass =
   "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500 cursor-pointer";
@@ -839,6 +852,10 @@ const submitInvite = async (projectId: string) => {
   } finally {
     inviteLoading.value = false;
   }
+};
+
+const openProject = (project: ProjectItem) => {
+  navigateTo({ path: "/", query: { projectId: project.id } });
 };
 
 const loadProjects = async () => {
