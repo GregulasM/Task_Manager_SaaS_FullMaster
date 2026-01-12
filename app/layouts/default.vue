@@ -138,6 +138,18 @@
                     />
                     <span>Профиль</span>
                   </NuxtLink>
+                  <NuxtLink
+                    to="/profile/my_projects?create=1"
+                    :class="btnClass"
+                    class="flex w-full items-center gap-2 px-3 py-2"
+                    @click="userMenuOpen = false"
+                  >
+                    <UIcon
+                      name="i-heroicons-plus-circle"
+                      class="h-4 w-4 text-sky-600"
+                    />
+                    <span>Создать проект</span>
+                  </NuxtLink>
 
                   <button
                     :class="dangerBtnClass"

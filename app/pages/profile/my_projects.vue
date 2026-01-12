@@ -469,6 +469,7 @@ type UserPublic = {
 };
 
 const projects = ref<ProjectItem[]>([]);
+const route = useRoute();
 
 const formMode = ref<FormMode>(null);
 const editingId = ref<string | null>(null);
@@ -601,6 +602,14 @@ const startCreate = () => {
   formMode.value = "create";
   errorMessage.value = "";
   resetForm();
+};
+
+const openCreateFromQuery = () => {
+  if (route.query.create !== "1") return;
+  startCreate();
+  if (typeof window !== "undefined") {
+    navigateTo({ path: "/profile/my_projects", query: {} }, { replace: true });
+  }
 };
 
 const startEdit = (project: ProjectItem) => {
@@ -893,6 +902,8 @@ const loadCurrentUser = async () => {
     currentUserId.value = null;
   }
 };
+
+watch(() => route.query.create, openCreateFromQuery, { immediate: true });
 
 onMounted(() => {
   loadProjects();

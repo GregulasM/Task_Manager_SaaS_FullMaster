@@ -849,7 +849,7 @@
                       :key="`placeholder-${column.id}-${index}`"
                       class="rounded-2xl border-2 border-dashed border-sky-300 bg-sky-50/70"
                       :style="dragPlaceholderStyle"
-                      @dragover.stop.prevent="handleDragOver(column.id, index)"
+                      @dragover.prevent
                       @drop.stop.prevent="handleDrop(column.id, index)"
                     />
                     <div
@@ -866,7 +866,7 @@
                       @click="handleTaskClick(task, $event)"
                       @dragstart="handleDragStart($event, task)"
                       @dragend="handleDragEnd"
-                      @dragover.stop.prevent="handleDragOver(column.id, index)"
+                      @dragover.prevent
                       @drop.stop.prevent="handleDrop(column.id, index)"
                     >
                       <div
@@ -1074,7 +1074,7 @@
                     :key="`placeholder-${column.id}-end`"
                     class="rounded-2xl border-2 border-dashed border-sky-300 bg-sky-50/70"
                     :style="dragPlaceholderStyle"
-                    @dragover.stop.prevent="handleDragOver(column.id, 'end')"
+                    @dragover.prevent
                     @drop.stop.prevent="handleDrop(column.id, 'end')"
                   />
                 </TransitionGroup>
@@ -1691,6 +1691,7 @@ const taskDraft = reactive({
   status: "TODO" as TaskStatus,
 });
 let taskClickTimeout: ReturnType<typeof setTimeout> | null = null;
+let dragStartFrame: number | null = null;
 const closeProjectModalOnDesktop = (matches: boolean) => {
   if (matches) {
     projectModalOpen.value = false;
@@ -1775,6 +1776,10 @@ const openBoard = (options: { scrollToHot?: boolean } = {}) => {
   if (!selectedProject.value.role) {
     accessError.value =
       "Вы не состоите в этом проекте. Запросите доступ у владельца.";
+    if (typeof window !== "undefined") {
+      const isDesktop = window.matchMedia("(min-width: 1280px)").matches;
+      if (isDesktop) projectModalOpen.value = false;
+    }
     return false;
   }
   accessNotice.value = "";
@@ -2945,19 +2950,30 @@ const moveTaskLocal = (
 const handleDragStart = (event: DragEvent, task: TaskItem) => {
   if (editingField.value?.id === task.id) return;
   const target = event.currentTarget as HTMLElement | null;
-  dragState.value = {
-    id: task.id,
-    fromStatus: task.status,
-    height: target?.getBoundingClientRect().height ?? 64,
-  };
   wasDragging.value = true;
+  const height = target?.getBoundingClientRect().height ?? 64;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", task.id);
   }
+  if (dragStartFrame) {
+    cancelAnimationFrame(dragStartFrame);
+  }
+  dragStartFrame = requestAnimationFrame(() => {
+    dragState.value = {
+      id: task.id,
+      fromStatus: task.status,
+      height,
+    };
+    dragStartFrame = null;
+  });
 };
 
 const handleDragEnd = () => {
+  if (dragStartFrame) {
+    cancelAnimationFrame(dragStartFrame);
+    dragStartFrame = null;
+  }
   dragState.value = null;
   dragOver.value = null;
   setTimeout(() => {
@@ -2975,6 +2991,9 @@ const handleDragOver = (status: TaskStatus, index: number | "end") => {
 
 const handleColumnDragOver = (status: TaskStatus, event: DragEvent) => {
   if (!dragState.value) return;
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = "move";
+  }
   const column = event.currentTarget as HTMLElement | null;
   if (!column) return;
   const cards = Array.from(
@@ -2987,18 +3006,15 @@ const handleColumnDragOver = (status: TaskStatus, event: DragEvent) => {
     return;
   }
   const pointerY = event.clientY;
-  const firstRect = cards[0].getBoundingClientRect();
-  const lastRect = cards[cards.length - 1].getBoundingClientRect();
-  const topThreshold = firstRect.top + firstRect.height * 0.25;
-  const bottomThreshold = lastRect.bottom - lastRect.height * 0.25;
-
-  if (pointerY < topThreshold) {
-    handleDragOver(status, 0);
+  const nextIndex = cards.findIndex((card) => {
+    const rect = card.getBoundingClientRect();
+    return pointerY < rect.top + rect.height / 2;
+  });
+  if (nextIndex === -1) {
+    handleDragOver(status, "end");
     return;
   }
-  if (pointerY > bottomThreshold) {
-    handleDragOver(status, "end");
-  }
+  handleDragOver(status, nextIndex);
 };
 
 const handleDrop = async (status: TaskStatus, index: number | "end") => {
