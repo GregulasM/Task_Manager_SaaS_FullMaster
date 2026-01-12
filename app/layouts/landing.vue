@@ -9,25 +9,25 @@
 
       <!-- Большие размытые круги — более насыщенные цвета -->
       <div
-        class="absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-sky-300 blur-2xl"
+        class="absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-sky-200/50 sm:bg-sky-300/60 blur-2xl"
         aria-hidden="true"
       />
       <div
-        class="absolute -right-24 -top-16 h-72 w-72 rounded-full bg-blue-400 blur-2xl"
+        class="absolute -right-24 -top-16 h-72 w-72 rounded-full bg-blue-300/50 sm:bg-blue-400/60 blur-2xl"
         aria-hidden="true"
       />
       <div
-        class="absolute -bottom-20 right-1/4 h-72 w-72 rounded-full bg-sky-300 blur-2xl"
+        class="absolute -bottom-20 right-1/4 h-72 w-72 rounded-full bg-sky-300/50 sm:bg-sky-300/60 blur-2xl"
         aria-hidden="true"
       />
 
       <!-- Средние акцентные круги -->
       <div
-        class="absolute left-1/2 top-20 h-56 w-56 -translate-x-1/2 rounded-full bg-blue-300 blur-2xl"
+        class="absolute left-1/2 top-20 h-56 w-56 -translate-x-1/2 rounded-full bg-blue-300/50 sm:bg-blue-300/60 blur-2xl"
         aria-hidden="true"
       />
       <div
-        class="absolute bottom-1/3 left-20 h-48 w-48 rounded-full bg-sky-200 blur-xl"
+        class="absolute bottom-1/3 left-20 h-48 w-48 rounded-full bg-blue-200/50 sm:bg-sky-200/60 blur-xl"
         aria-hidden="true"
       />
 
@@ -144,13 +144,13 @@
       </nav>
     </header>
 
-    <!-- Page wrapper (без боковых отступов - контент сам решает) -->
-    <main class="mx-auto w-full max-w-5xl py-2 sm:py-4">
+    <!-- Page wrapper — полноэкранные секции -->
+    <main class="w-full">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer class="mx-auto w-full max-w-5xl px-2 pb-4 3xs:px-3 xs:px-4 sm:px-6">
+    <footer class="w-full px-4 pb-6 sm:px-8 sm:pb-8">
       <p :class="textClass" class="text-center text-slate-500">
         {{ new Date().getFullYear() }} FullMaster
       </p>
