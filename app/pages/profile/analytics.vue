@@ -1,6 +1,6 @@
 <template>
   <UCard
-    class="rounded-[32px] border border-sky-200 bg-white/90"
+    class="rounded-lg border border-sky-200 bg-white/90"
     :ui="{
       root:
         'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
@@ -12,9 +12,9 @@
   >
     <template #header>
       <div
-        class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
+        class="flex flex-col gap-1 sm:gap-3 xl:flex-row xl:items-center xl:justify-between"
       >
-        <div class="space-y-2">
+        <div class="space-y-1 sm:space-y-2">
           <p
             class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
           >
@@ -26,7 +26,7 @@
             График задач по статусам
           </h2>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-1 sm:gap-2">
           <UBadge
             class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
           >

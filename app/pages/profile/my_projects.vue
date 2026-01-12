@@ -1,6 +1,6 @@
 <template>
   <UCard
-    class="rounded-[32px] border border-sky-200 bg-white/90"
+    class="rounded-lg border border-sky-200 bg-white/90"
     :ui="{
       root:
         'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
@@ -12,9 +12,9 @@
   >
     <template #header>
       <div
-        class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
+        class="flex flex-col gap-1 sm:gap-3 xl:flex-row xl:items-center xl:justify-between"
       >
-        <div class="space-y-2">
+        <div class="space-y-1 sm:space-y-2">
           <p
             class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
           >
@@ -26,7 +26,7 @@
             Управление проектами
           </h2>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-1 sm:gap-2">
           <UBadge
             class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
           >
@@ -138,7 +138,7 @@
         </div>
       </div>
 
-      <div v-else class="max-h-[60vh] space-y-3 overflow-auto pr-2">
+      <div v-else class="max-h-[100vh] space-y-3 overflow-auto pr-2">
         <div
           v-for="project in projects"
           :key="project.id"
@@ -489,7 +489,7 @@ const form = reactive({
 const bodyTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
 
-const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+const baseButtonClass = `rounded-full border px-3 py-1.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
 
 const primaryButtonClass =
   "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
@@ -498,11 +498,11 @@ const dangerButtonClass =
   "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
 
 const inputUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
+  base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
 };
 
 const textareaUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
+  base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
 };
 
 const fieldUi = {

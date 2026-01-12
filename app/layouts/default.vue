@@ -77,10 +77,11 @@
           <!-- Выпадающее меню пользователя -->
           <UPopover
             v-if="isAuthenticated"
+            v-model:open="userMenuOpen"
             mode="click"
             :ui="{
               content:
-                'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+                'p-0 bg-transparent shadow-none ring-0 rounded-none z-50 ' +
                 'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
                 'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
                 'origin-(--reka-popover-content-transform-origin) ' +
@@ -91,6 +92,8 @@
             <button
               :class="btnClass"
               class="flex items-center gap-1 px-2 md:gap-2 md:px-3"
+              @mouseenter="openUserMenu"
+              @mouseleave="scheduleUserMenuClose"
             >
               <UIcon
                 name="i-heroicons-user-circle"
@@ -105,7 +108,9 @@
 
             <template #content>
               <div
-                class="w-56 border border-sky-200/70 bg-white/95 p-2 shadow-xl shadow-sky-200/30 backdrop-blur-md"
+                class="w-56 rounded-sm border border-sky-200/70 bg-white/95 p-2 shadow-xl shadow-sky-200/30 backdrop-blur-md"
+                @mouseenter="openUserMenu"
+                @mouseleave="scheduleUserMenuClose"
               >
                 <!-- Информация о пользователе -->
                 <div
@@ -125,6 +130,7 @@
                     to="/profile"
                     :class="btnClass"
                     class="flex w-full items-center gap-2 px-3 py-2"
+                    @click="userMenuOpen = false"
                   >
                     <UIcon
                       name="i-heroicons-user-circle"
@@ -224,6 +230,8 @@ const hotTasks = ref(0);
 const logoutLoading = ref(false);
 const confirmLogoutOpen = ref(false);
 const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
+const userMenuOpen = ref(false);
+let userMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Навигация
 const nav: NavItem[] = [
@@ -279,6 +287,21 @@ const hotTasksBadgeClass = computed(() => {
   }
   return "border-rose-200 bg-rose-100 text-rose-800";
 });
+
+const openUserMenu = () => {
+  if (userMenuCloseTimer) {
+    clearTimeout(userMenuCloseTimer);
+    userMenuCloseTimer = null;
+  }
+  userMenuOpen.value = true;
+};
+
+const scheduleUserMenuClose = () => {
+  if (userMenuCloseTimer) clearTimeout(userMenuCloseTimer);
+  userMenuCloseTimer = setTimeout(() => {
+    userMenuOpen.value = false;
+  }, 120);
+};
 
 // Methods
 const fetchUser = async () => {

@@ -207,7 +207,7 @@ const latinNamePattern = /^[A-Za-z]+(?:[\s'-][A-Za-z]+)*$/;
 const isLatinName = (value: string) => latinNamePattern.test(value);
 
 const inputUi = {
-  base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300 ${bodyTextClass}`,
+  base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
 };
 
 const fieldUi = {

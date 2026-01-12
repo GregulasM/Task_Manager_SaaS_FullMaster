@@ -1,18 +1,212 @@
 <template>
-  <UContainer
-    :ui="{
-      content:
-        'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
-        'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
-        'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
-        'origin-(--reka-popover-content-transform-origin) ' +
-        'focus:outline-none pointer-events-auto',
-      arrow: 'hidden',
-    }"
-  >
+  <div>
     <div class="flex flex-col gap-6 lg:flex-row lg:grid-cols-[320px,1fr]">
-      <aside class="space-y-4 basis-2/8">
+      <aside class="space-y-4 lg:basis-2/8">
+        <div v-if="!isBoardOpen" class="lg:hidden">
+          <div class="rounded-[28px] border border-sky-200 bg-white/90 p-4">
+            <div class="flex items-center justify-between">
+              <div class="space-y-1">
+                <p
+                  class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                >
+                  Навигация
+                </p>
+                <h2
+                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                >
+                  Проекты
+                </h2>
+              </div>
+              <UBadge
+                v-if="loading"
+                class="rounded-full border border-sky-200 bg-sky-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+              >
+                Загрузка
+              </UBadge>
+            </div>
+
+            <div class="mt-4 max-h-[90vh] space-y-4 overflow-y-auto pr-1">
+              <div>
+                <div class="flex items-center justify-between">
+                  <p
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.3em] text-slate-500"
+                  >
+                    Мои проекты
+                  </p>
+                  <UBadge
+                    class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                  >
+                    {{ myProjects.length }}
+                  </UBadge>
+                </div>
+                <div
+                  v-if="loading"
+                  class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-4 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                >
+                  Загрузка проектов...
+                </div>
+                <div
+                  v-else-if="!myProjects.length"
+                  class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                >
+                  Пока нет ваших проектов.
+                </div>
+                <div v-else class="mt-3 grid gap-3">
+                  <div
+                    v-for="project in myProjects"
+                    :key="project.id"
+                    role="button"
+                    tabindex="0"
+                    class="w-full rounded-2xl border border-sky-200/60 bg-white/95 px-4 py-3 text-left shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
+                    :class="projectButtonClass(project.id)"
+                    @click="openProjectDetails(project, 'my')"
+                    @keydown.enter.prevent="openProjectDetails(project, 'my')"
+                    @keydown.space.prevent="openProjectDetails(project, 'my')"
+                  >
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <p
+                          class="truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+                        >
+                          {{ project.name }}
+                        </p>
+                        <p
+                          class="mt-1 line-clamp-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                        >
+                          {{ project.description }}
+                        </p>
+                      </div>
+                      <div class="flex flex-col items-end gap-2">
+                        <UBadge
+                          role="button"
+                          tabindex="0"
+                          class="cursor-pointer rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                          @click.stop="openBoardFromProject(project, 'my')"
+                          @keydown.enter.prevent="
+                            openBoardFromProject(project, 'my')
+                          "
+                        >
+                          {{ project.tasksCount }}
+                        </UBadge>
+                        <UBadge
+                          role="button"
+                          tabindex="0"
+                          class="cursor-pointer rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                          :class="hotBadgeClass(project.hotTasksCount)"
+                          @click.stop="
+                            openBoardFromProject(project, 'my', {
+                              scrollToHot: true,
+                            })
+                          "
+                          @keydown.enter.prevent="
+                            openBoardFromProject(project, 'my', {
+                              scrollToHot: true,
+                            })
+                          "
+                        >
+                          🔥 {{ project.hotTasksCount }}
+                        </UBadge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between">
+                  <p
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.3em] text-slate-500"
+                  >
+                    Другие проекты
+                  </p>
+                  <UBadge
+                    class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                  >
+                    {{ otherProjects.length }}
+                  </UBadge>
+                </div>
+                <div
+                  v-if="loading"
+                  class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-4 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                >
+                  Загрузка проектов...
+                </div>
+                <div
+                  v-else-if="!otherProjects.length"
+                  class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                >
+                  Пока нет других проектов.
+                </div>
+                <div v-else class="mt-3 grid gap-3">
+                  <div
+                    v-for="project in otherProjects"
+                    :key="project.id"
+                    role="button"
+                    tabindex="0"
+                    class="w-full rounded-2xl border border-sky-200/60 bg-white/95 px-4 py-3 text-left shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
+                    :class="projectButtonClass(project.id)"
+                    @click="openProjectDetails(project, 'other')"
+                    @keydown.enter.prevent="
+                      openProjectDetails(project, 'other')
+                    "
+                    @keydown.space.prevent="
+                      openProjectDetails(project, 'other')
+                    "
+                  >
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <p
+                          class="truncate text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+                        >
+                          {{ project.name }}
+                        </p>
+                        <p
+                          class="mt-1 line-clamp-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                        >
+                          {{ project.description }}
+                        </p>
+                      </div>
+                      <div class="flex flex-col items-end gap-2">
+                        <UBadge
+                          role="button"
+                          tabindex="0"
+                          class="cursor-pointer rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                          @click.stop="openBoardFromProject(project, 'other')"
+                          @keydown.enter.prevent="
+                            openBoardFromProject(project, 'other')
+                          "
+                        >
+                          {{ project.tasksCount }}
+                        </UBadge>
+                        <UBadge
+                          role="button"
+                          tabindex="0"
+                          class="cursor-pointer rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                          :class="hotBadgeClass(project.hotTasksCount)"
+                          @click.stop="
+                            openBoardFromProject(project, 'other', {
+                              scrollToHot: true,
+                            })
+                          "
+                          @keydown.enter.prevent="
+                            openBoardFromProject(project, 'other', {
+                              scrollToHot: true,
+                            })
+                          "
+                        >
+                          🔥 {{ project.hotTasksCount }}
+                        </UBadge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <UCard
+          class="hidden rounded-[28px] border border-sky-200 bg-white/90 lg:block"
           :ui="{
             root:
               'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
@@ -22,7 +216,6 @@
               'focus:outline-none pointer-events-auto',
             arrow: 'hidden',
           }"
-          class="rounded-[28px] border border-sky-200 bg-white/90"
         >
           <template #header>
             <div class="flex items-center justify-between">
@@ -51,7 +244,7 @@
             :items="accordionItems"
             type="multiple"
             :default-value="['my', 'other']"
-            class="space-y-4"
+            class="max-h-[60vh] space-y-4 overflow-y-auto pr-1"
           >
             <template #leading="{ item }">
               <UIcon :name="item.icon" class="h-4 w-4 text-sky-600" />
@@ -94,9 +287,21 @@
                   </div>
                   <div class="ml-3 flex items-center gap-2">
                     <UBadge
-                      class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                      class="cursor-pointer rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                      @click.stop="openBoardFromProject(project, 'my')"
                     >
                       {{ project.tasksCount }}
+                    </UBadge>
+                    <UBadge
+                      class="cursor-pointer rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                      :class="hotBadgeClass(project.hotTasksCount)"
+                      @click.stop="
+                        openBoardFromProject(project, 'my', {
+                          scrollToHot: true,
+                        })
+                      "
+                    >
+                      🔥 {{ project.hotTasksCount }}
                     </UBadge>
                   </div>
                 </UButton>
@@ -140,9 +345,21 @@
                   </div>
                   <div class="ml-3 flex items-center gap-2">
                     <UBadge
-                      class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                      class="cursor-pointer rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                      @click.stop="openBoardFromProject(project, 'other')"
                     >
                       {{ project.tasksCount }}
+                    </UBadge>
+                    <UBadge
+                      class="cursor-pointer rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                      :class="hotBadgeClass(project.hotTasksCount)"
+                      @click.stop="
+                        openBoardFromProject(project, 'other', {
+                          scrollToHot: true,
+                        })
+                      "
+                    >
+                      🔥 {{ project.hotTasksCount }}
                     </UBadge>
                   </div>
                 </UButton>
@@ -152,17 +369,21 @@
         </UCard>
       </aside>
 
-      <section class="basis-6/8 space-y-6 lg:flex-1 lg:min-w-0">
+      <section
+        class="basis-6/8 space-y-6 lg:flex-1 lg:min-w-0"
+        :class="{ 'hidden lg:block': !isBoardOpen }"
+      >
         <UAlert
           v-if="errorMessage"
           icon="i-heroicons-exclamation-circle"
           title="Ошибка"
           :description="errorMessage"
+          :ui="alertUi"
           class="border border-rose-200 bg-rose-50 text-slate-900"
         />
         <UCard
           v-if="selectedProject && !isBoardOpen"
-          class="rounded-[32px] border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
+          class="rounded-lg border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
           :ui="{
             body: 'flex flex-col lg:flex-1',
             footer: 'lg:mt-auto',
@@ -176,9 +397,9 @@
         >
           <template #header>
             <div
-              class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+              class="flex flex-col gap-2 sm:gap-4 lg:flex-row lg:items-center lg:justify-between"
             >
-              <div class="space-y-2">
+              <div class="space-y-1 sm:space-y-2">
                 <p
                   class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
                 >
@@ -218,9 +439,17 @@
               icon="i-heroicons-exclamation-circle"
               title="Нет доступа"
               :description="accessError"
+              :ui="alertUi"
               class="border border-rose-200 bg-rose-50 text-slate-900"
             />
-
+            <UAlert
+              v-if="accessNotice"
+              icon="i-heroicons-information-circle"
+              title="Запрос доступа"
+              :description="accessNotice"
+              :ui="alertUi"
+              class="border border-sky-200 bg-sky-50 text-slate-900"
+            />
             <UCollapsible
               v-if="openMembersId === selectedProject.id"
               :open="openMembersId === selectedProject.id"
@@ -342,7 +571,7 @@
 
         <UCard
           v-else-if="selectedProject && isBoardOpen"
-          class="rounded-[32px] border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
+          class="rounded-lg border border-sky-200 bg-white/90 lg:max-h-250 lg:flex lg:flex-col overflow-y-scroll"
           :ui="{
             body: 'flex flex-col lg:flex-1',
             root:
@@ -355,9 +584,9 @@
         >
           <template #header>
             <div
-              class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+              class="flex flex-col gap-2 sm:gap-4 lg:flex-row lg:items-center lg:justify-between"
             >
-              <div class="space-y-2">
+              <div class="space-y-1 sm:space-y-2">
                 <p
                   class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
                 >
@@ -402,124 +631,139 @@
               icon="i-heroicons-exclamation-circle"
               title="Ошибка"
               :description="boardError"
+              :ui="alertUi"
               class="border border-rose-200 bg-rose-50 text-slate-900"
             />
 
-            <div class="rounded-[24px] border border-sky-200 bg-sky-50/70 p-4">
-              <div
-                class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"
+            <div
+              class="rounded-lg border border-sky-200 bg-sky-50/70 p-3 sm:p-4"
+            >
+              <UAccordion
+                :items="createAccordionItems"
+                type="single"
+                v-model="createAccordionOpen"
+                collapsible
+                :unmount-on-hide="false"
+                class="space-y-3"
               >
-                <div class="space-y-1">
-                  <p
-                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
-                  >
-                    Новая задача
-                  </p>
-                  <h3
-                    class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
-                  >
-                    Создание карточки
-                  </h3>
-                </div>
-                <div class="flex items-center gap-2">
-                  <UBadge
-                    v-if="createLoading"
-                    class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
-                  >
-                    Создаем
-                  </UBadge>
-                  <UButton
-                    :class="[baseButtonClass, primaryButtonClass]"
-                    variant="ghost"
-                    color="neutral"
-                    icon="i-heroicons-plus"
-                    leading
-                    :loading="createLoading"
-                    :disabled="createLoading || !createForm.title.trim()"
-                    @click="createTask"
-                  >
-                    Создать задачу
-                  </UButton>
-                </div>
-              </div>
+                <template #default>
+                  <div class="flex flex-col gap-1 sm:gap-2">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                    >
+                      Новая задача
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3
+                        class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                      >
+                        Создание карточки
+                      </h3>
+                      <UBadge
+                        v-if="createLoading"
+                        class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                      >
+                        Создаем
+                      </UBadge>
+                    </div>
+                  </div>
+                </template>
 
-              <div class="mt-4 flex flex-col gap-4 xl:flex-row">
-                <UFormField label="Название" :ui="fieldUi" class="flex-1">
-                  <UInput
-                    v-model.trim="createForm.title"
-                    placeholder="Название задачи"
-                    :ui="inputUi"
-                  />
-                </UFormField>
-                <UFormField label="Описание" :ui="fieldUi" class="flex-1">
-                  <UTextarea
-                    v-model.trim="createForm.description"
-                    placeholder="Описание задачи"
-                    :rows="3"
-                    class="min-h-[96px]"
-                    :ui="textareaUi"
-                  />
-                </UFormField>
-              </div>
+                <template #create>
+                  <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <UButton
+                      :class="[baseButtonClass, primaryButtonClass]"
+                      variant="ghost"
+                      color="neutral"
+                      icon="i-heroicons-plus"
+                      leading
+                      :loading="createLoading"
+                      :disabled="createLoading || !createForm.title.trim()"
+                      @click="createTask"
+                    >
+                      Создать задачу
+                    </UButton>
+                  </div>
 
-              <div
-                class="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap xl:flex-nowrap"
-              >
-                <UFormField
-                  label="Исполнитель"
-                  :ui="fieldUi"
-                  class="flex-1 min-w-[180px]"
-                >
-                  <USelectMenu
-                    :items="assigneeOptions"
-                    :model-value="createForm.assigneeId"
-                    value-key="value"
-                    label-key="label"
-                    placeholder="Без исполнителя"
-                    :ui="selectUi"
-                    @update:model-value="setCreateAssignee"
-                  />
-                </UFormField>
-                <UFormField
-                  label="Дедлайн"
-                  :ui="fieldUi"
-                  class="flex-1 min-w-[180px]"
-                >
-                  <UInput
-                    v-model="createForm.dueDate"
-                    type="date"
-                    :ui="inputUi"
-                  />
-                </UFormField>
-                <UFormField
-                  label="Приоритет"
-                  :ui="fieldUi"
-                  class="flex-1 min-w-[180px]"
-                >
-                  <USelectMenu
-                    :items="priorityOptions"
-                    :model-value="createForm.priority"
-                    value-key="value"
-                    label-key="label"
-                    :ui="selectUi"
-                    @update:model-value="setCreatePriority"
-                  />
-                </UFormField>
-                <UFormField
-                  label="Статус"
-                  :ui="fieldUi"
-                  class="flex-1 min-w-[180px]"
-                >
-                  <USelectMenu
-                    :items="statusOptions"
-                    :model-value="createForm.status"
-                    value-key="value"
-                    label-key="label"
-                    :ui="selectUi"
-                    @update:model-value="setCreateStatus"
-                  />
-                </UFormField>
-              </div>
+                  <div class="mt-3 flex flex-col gap-3 sm:gap-4 xl:flex-row">
+                    <UFormField label="Название" :ui="fieldUi" class="flex-1">
+                      <UInput
+                        v-model.trim="createForm.title"
+                        placeholder="Название задачи"
+                        :ui="inputUi"
+                      />
+                    </UFormField>
+                    <UFormField label="Описание" :ui="fieldUi" class="flex-1">
+                      <UTextarea
+                        v-model.trim="createForm.description"
+                        placeholder="Описание задачи"
+                        :rows="3"
+                        class="min-h-[96px]"
+                        :ui="textareaUi"
+                      />
+                    </UFormField>
+                  </div>
+
+                  <div
+                    class="mt-3 flex flex-col gap-3 sm:gap-4 sm:flex-row sm:flex-wrap xl:flex-nowrap"
+                  >
+                    <UFormField
+                      label="Исполнитель"
+                      :ui="fieldUi"
+                      class="flex-1 min-w-[180px]"
+                    >
+                      <USelectMenu
+                        :items="assigneeOptions"
+                        :model-value="createForm.assigneeId"
+                        value-key="value"
+                        label-key="label"
+                        placeholder="Без исполнителя"
+                        :ui="selectUi"
+                        @update:model-value="setCreateAssignee"
+                      />
+                    </UFormField>
+                    <UFormField
+                      label="Дедлайн"
+                      :ui="fieldUi"
+                      class="flex-1 min-w-[180px]"
+                    >
+                      <UInput
+                        v-model="createForm.dueDate"
+                        type="date"
+                        :ui="inputUi"
+                      />
+                    </UFormField>
+                    <UFormField
+                      label="Приоритет"
+                      :ui="fieldUi"
+                      class="flex-1 min-w-[180px]"
+                    >
+                      <USelectMenu
+                        :items="priorityOptions"
+                        :model-value="createForm.priority"
+                        value-key="value"
+                        label-key="label"
+                        :ui="selectUi"
+                        @update:model-value="setCreatePriority"
+                      />
+                    </UFormField>
+                    <UFormField
+                      label="Статус"
+                      :ui="fieldUi"
+                      class="flex-1 min-w-[180px]"
+                    >
+                      <USelectMenu
+                        :items="statusOptions"
+                        :model-value="createForm.status"
+                        value-key="value"
+                        label-key="label"
+                        :ui="selectUi"
+                        @update:model-value="setCreateStatus"
+                      />
+                    </UFormField>
+                  </div>
+                </template>
+              </UAccordion>
             </div>
 
             <div v-if="boardLoading" class="grid gap-4 lg:grid-cols-4">
@@ -540,12 +784,16 @@
               </div>
             </div>
 
-            <div v-else class="flex flex-1 gap-4 overflow-x-scroll pb-2">
+            <div
+              v-else
+              ref="boardScrollRef"
+              class="flex flex-1 gap-3 overflow-x-scroll pb-2 sm:gap-4"
+            >
               <div
                 v-for="column in boardColumns"
                 :key="column.id"
-                class="flex min-h-[420px] max-h-[800px] overflow-y-scroll w-80 shrink-0 flex-col rounded-[28px] border border-sky-200 bg-white/80 p-4"
-                @dragover.prevent="handleDragOver(column.id, 'end')"
+                class="flex min-h-[360px] max-h-[640px] w-64 shrink-0 flex-col overflow-y-scroll rounded-[28px] border border-sky-200 bg-white/80 p-3 sm:min-h-[420px] sm:max-h-[800px] sm:w-72 sm:p-4 md:w-80"
+                @dragover.prevent="handleColumnDragOver(column.id, $event)"
                 @drop.prevent="handleDrop(column.id, 'end')"
               >
                 <div class="flex items-center justify-between">
@@ -561,131 +809,55 @@
                   </UBadge>
                 </div>
 
-                <div class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
+                <TransitionGroup
+                  tag="div"
+                  class="mt-3 flex-1 space-y-2 overflow-y-auto pr-1 sm:mt-4 sm:space-y-3"
+                  :move-class="'task-move'"
+                >
                   <div
-                    v-if="!column.tasks.length"
+                    v-if="shouldShowEmptyColumn(column.id, column.tasks.length)"
+                    :key="`empty-${column.id}`"
                     class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-3 py-3 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
                   >
                     Пока задач нет.
                   </div>
-                  <div
+                  <template
                     v-for="(task, index) in column.tasks"
                     :key="task.id"
-                    class="rounded-2xl border border-sky-200 bg-white/90 p-3 shadow-sm transition"
-                    :class="taskCardClass(task, column.id, index)"
-                    :draggable="!isTaskEditing(task.id)"
-                    @dragstart="handleDragStart($event, task)"
-                    @dragend="handleDragEnd"
-                    @dragover.prevent="handleDragOver(column.id, index)"
-                    @drop.prevent="handleDrop(column.id, index)"
                   >
                     <div
-                      class="mb-2 w-full rounded-full p-1"
-                      :class="priorityStripeClass(task)"
+                      v-if="isDragPlaceholder(column.id, index)"
+                      :key="`placeholder-${column.id}-${index}`"
+                      class="rounded-2xl border-2 border-dashed border-sky-300 bg-sky-50/70"
+                      :style="dragPlaceholderStyle"
+                      @dragover.stop.prevent="handleDragOver(column.id, index)"
+                      @drop.stop.prevent="handleDrop(column.id, index)"
                     />
-                    <div class="flex items-start justify-between gap-2">
-                      <div class="flex-1">
-                        <p
-                          class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-500"
-                        >
-                          Название
-                        </p>
-                        <div v-if="isEditing(task.id, 'title')">
-                          <UInput
-                            v-model.trim="editingValue"
-                            placeholder="Название"
-                            size="xs"
-                            :ui="inputUi"
-                            @blur="saveEditing(task)"
-                            @keydown.enter.prevent="saveEditing(task)"
-                            @keydown.esc="cancelEditing"
-                          />
-                        </div>
-                        <p
-                          v-else
-                          class="flex cursor-text items-center gap-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
-                          @dblclick="startEditing(task, 'title')"
-                        >
-                          <span class="truncate">{{ task.title }}</span>
-                          <UIcon
-                            v-if="taskAlertMeta(task)"
-                            name="i-heroicons-exclamation-triangle-solid"
-                            :class="[
-                              'h-4 w-4 shrink-0',
-                              taskAlertMeta(task)?.class,
-                            ]"
-                            :title="taskAlertMeta(task)?.title"
-                          />
-                        </p>
-                      </div>
-                      <UButton
-                        :class="[baseButtonClass, dangerButtonClass]"
-                        variant="ghost"
-                        color="neutral"
-                        size="xs"
-                        icon="i-heroicons-trash"
-                        @click="confirmDeleteTask(task)"
-                      />
-                    </div>
-
-                    <div>
-                      <p
-                        class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-500"
-                      >
-                        Описание
-                      </p>
-                      <div v-if="isEditing(task.id, 'description')">
-                        <UTextarea
-                          v-model.trim="editingValue"
-                          placeholder="Описание"
-                          :rows="2"
-                          size="xs"
-                          :ui="textareaUi"
-                          @blur="saveEditing(task)"
-                          @keydown.esc="cancelEditing"
-                        />
-                      </div>
-                      <p
-                        v-else
-                        class="cursor-text text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
-                        @dblclick="startEditing(task, 'description')"
-                      >
-                        {{ task.description || "Без описания" }}
-                      </p>
-                    </div>
-
                     <div
-                      class="grid gap-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                      class="group relative rounded-2xl border border-sky-200 bg-white/90 p-2 shadow-sm transition-colors hover:border-sky-300 hover:bg-sky-50/80 sm:p-2.5"
+                      :class="taskCardClass(task, column.id, index)"
+                      :data-hot-task="
+                        isHotTask(task, column.id) ? 'true' : undefined
+                      "
+                      data-task-card
+                      :draggable="!isTaskEditing(task.id)"
+                      :hidden="isDraggingTask(task.id)"
+                      @click="handleTaskClick(task, $event)"
+                      @dragstart="handleDragStart($event, task)"
+                      @dragend="handleDragEnd"
+                      @dragover.stop.prevent="handleDragOver(column.id, index)"
+                      @drop.stop.prevent="handleDrop(column.id, index)"
                     >
-                      <div class="grid grid-cols-[1fr,auto] items-center gap-2">
-                        <span class="text-slate-500">Исполнитель:</span>
-                        <div
-                          class="min-w-[140px] max-w-[170px]"
-                          @pointerdown.stop
-                        >
-                          <USelectMenu
-                            :items="assigneeOptions"
-                            :model-value="
-                              task.assignee?.id || NO_ASSIGNEE_VALUE
-                            "
-                            value-key="value"
-                            label-key="label"
-                            placeholder="Без исполнителя"
-                            class="w-full"
-                            :ui="selectUi"
-                            @update:model-value="
-                              (value) => setTaskAssignee(task, value)
-                            "
-                          />
-                        </div>
-                      </div>
-                      <div class="grid grid-cols-[1fr,auto] items-center gap-2">
-                        <span class="text-slate-500">Дедлайн:</span>
-                        <div class="min-w-[140px] max-w-[170px]">
-                          <div v-if="isEditing(task.id, 'dueDate')">
+                      <div
+                        class="mb-2 w-full rounded-full p-1"
+                        :class="priorityStripeClass(task)"
+                      />
+                      <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1">
+                          <div v-if="isEditing(task.id, 'title')" data-no-modal>
                             <UInput
-                              v-model="editingValue"
-                              type="date"
+                              v-model.trim="editingValue"
+                              placeholder="Название"
                               size="xs"
                               :ui="inputUi"
                               @blur="saveEditing(task)"
@@ -693,66 +865,195 @@
                               @keydown.esc="cancelEditing"
                             />
                           </div>
-                          <button
+                          <p
                             v-else
-                            type="button"
-                            class="w-full rounded-full border border-sky-200 bg-white px-2 py-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
-                            @click="startEditing(task, 'dueDate')"
+                            class="flex cursor-text items-center gap-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-900"
+                            @dblclick="handleTaskEdit(task, 'title')"
                           >
-                            {{ formatDueDate(task.dueDate) }}
-                          </button>
+                            <span class="truncate">{{ task.title }}</span>
+                            <UIcon
+                              v-if="taskAlertMeta(task)"
+                              name="i-heroicons-exclamation-triangle-solid"
+                              :class="[
+                                'h-4 w-4 shrink-0',
+                                taskAlertMeta(task)?.class,
+                              ]"
+                              :title="taskAlertMeta(task)?.title"
+                            />
+                          </p>
                         </div>
+                        <UButton
+                          :class="[baseButtonClass, dangerButtonClass]"
+                          variant="ghost"
+                          color="neutral"
+                          size="xs"
+                          icon="i-heroicons-trash"
+                          data-no-modal
+                          @click="confirmDeleteTask(task)"
+                        />
                       </div>
-                      <div class="grid grid-cols-[1fr,auto] items-center gap-2">
-                        <span class="text-slate-500">Приоритет:</span>
-                        <div class="min-w-[140px] max-w-[170px]">
-                          <USelectMenu
-                            :items="priorityOptions"
-                            :model-value="task.priority"
-                            value-key="value"
-                            label-key="label"
-                            class="w-full"
-                            :ui="selectUi"
-                            @update:model-value="
-                              (value) => setTaskPriority(task, value)
-                            "
-                          />
-                        </div>
-                      </div>
-                      <div class="grid grid-cols-[1fr,auto] items-center gap-2">
-                        <span class="text-slate-500">Статус:</span>
-                        <div class="min-w-[140px] max-w-[170px]">
-                          <USelectMenu
-                            :items="statusOptions"
-                            :model-value="task.status"
-                            value-key="value"
-                            label-key="label"
-                            class="w-full"
-                            :ui="selectUi"
-                            @update:model-value="
-                              (value) => setTaskStatus(task, value)
-                            "
-                          />
-                        </div>
-                      </div>
-                    </div>
 
-                    <div class="flex flex-wrap items-center gap-2 pt-4">
-                      <UBadge
-                        class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em]"
-                        :class="priorityBadgeClass(task.priority)"
+                      <div>
+                        <div
+                          v-if="isEditing(task.id, 'description')"
+                          data-no-modal
+                        >
+                          <UTextarea
+                            v-model.trim="editingValue"
+                            placeholder="Описание"
+                            :rows="2"
+                            size="xs"
+                            :ui="textareaUi"
+                            @blur="saveEditing(task)"
+                            @keydown.esc="cancelEditing"
+                          />
+                        </div>
+                        <p
+                          v-else
+                          class="cursor-text text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                          @dblclick="handleTaskEdit(task, 'description')"
+                        >
+                          {{ task.description || "Без описания" }}
+                        </p>
+                      </div>
+
+                      <div
+                        class="mt-2 flex flex-wrap items-center gap-2 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                       >
-                        {{ priorityLabels[task.priority] }}
-                      </UBadge>
-                      <UBadge
-                        v-if="task.isOverdue"
-                        class="rounded-full border border-rose-200 bg-rose-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-rose-800"
-                      >
-                        Просрочено
-                      </UBadge>
+                        <div class="flex items-center gap-1" data-no-modal>
+                          <UIcon
+                            name="i-heroicons-user"
+                            class="h-3 w-3 text-slate-400"
+                            title="Исполнитель"
+                          />
+                          <div
+                            class="min-w-[90px] max-w-[140px]"
+                            @pointerdown.stop
+                          >
+                            <USelectMenu
+                              :items="assigneeOptions"
+                              :model-value="
+                                task.assignee?.id || NO_ASSIGNEE_VALUE
+                              "
+                              value-key="value"
+                              label-key="label"
+                              placeholder="—"
+                              class="w-full"
+                              :ui="selectUi"
+                              @update:model-value="
+                                (value) => setTaskAssignee(task, value)
+                              "
+                            />
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-1" data-no-modal>
+                          <UIcon
+                            name="i-heroicons-calendar-days"
+                            class="h-3 w-3 text-slate-400"
+                            title="Дедлайн"
+                          />
+                          <div>
+                            <div
+                              v-if="isEditing(task.id, 'dueDate')"
+                              data-no-modal
+                            >
+                              <UInput
+                                v-model="editingValue"
+                                type="date"
+                                size="xs"
+                                :ui="inputUi"
+                                @blur="saveEditing(task)"
+                                @keydown.enter.prevent="saveEditing(task)"
+                                @keydown.esc="cancelEditing"
+                              />
+                            </div>
+                            <button
+                              v-else
+                              type="button"
+                              class="rounded-full border border-sky-200 bg-white px-2 py-0.5 font-semibold text-slate-700"
+                              data-no-modal
+                              title="Дедлайн"
+                              @click="startEditing(task, 'dueDate')"
+                            >
+                              {{ formatDueDate(task.dueDate) }}
+                            </button>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-1" data-no-modal>
+                          <UIcon
+                            name="i-heroicons-flag"
+                            class="h-3 w-3 text-slate-400"
+                            title="Приоритет"
+                          />
+                          <div class="min-w-[80px] max-w-[120px]">
+                            <USelectMenu
+                              :items="priorityOptions"
+                              :model-value="task.priority"
+                              value-key="value"
+                              label-key="label"
+                              class="w-full"
+                              :ui="selectUi"
+                              @update:model-value="
+                                (value) => setTaskPriority(task, value)
+                              "
+                            />
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-1" data-no-modal>
+                          <UIcon
+                            name="i-heroicons-adjustments-horizontal"
+                            class="h-3 w-3 text-slate-400"
+                            title="Статус"
+                          />
+                          <div class="min-w-[80px] max-w-[120px]">
+                            <USelectMenu
+                              :items="statusOptions"
+                              :model-value="task.status"
+                              value-key="value"
+                              label-key="label"
+                              class="w-full"
+                              :ui="selectUi"
+                              @update:model-value="
+                                (value) => setTaskStatus(task, value)
+                              "
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="flex flex-wrap items-center gap-2 pt-4 pr-10">
+                        <UBadge
+                          class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em]"
+                          :class="priorityBadgeClass(task.priority)"
+                        >
+                          {{ priorityLabels[task.priority] }}
+                        </UBadge>
+                        <UBadge
+                          v-if="task.isOverdue"
+                          class="rounded-full border border-rose-200 bg-rose-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-rose-800"
+                        >
+                          Просрочено
+                        </UBadge>
+                      </div>
+                      <UButton
+                        variant="ghost"
+                        color="neutral"
+                        icon="i-heroicons-folder-open"
+                        aria-label="Открыть карточку"
+                        class="absolute bottom-2 right-2 h-7 w-7 rounded-full p-0 text-slate-500 transition hover:text-slate-900"
+                        @click.stop="openTaskModal(task)"
+                      />
                     </div>
-                  </div>
-                </div>
+                  </template>
+                  <div
+                    v-if="isDragPlaceholderEnd(column.id)"
+                    :key="`placeholder-${column.id}-end`"
+                    class="rounded-2xl border-2 border-dashed border-sky-300 bg-sky-50/70"
+                    :style="dragPlaceholderStyle"
+                    @dragover.stop.prevent="handleDragOver(column.id, 'end')"
+                    @drop.stop.prevent="handleDrop(column.id, 'end')"
+                  />
+                </TransitionGroup>
               </div>
             </div>
           </div>
@@ -768,7 +1069,7 @@
               'focus:outline-none pointer-events-auto',
           }"
           v-else
-          class="rounded-[32px] border border-dashed border-sky-200 bg-white/80"
+          class="rounded-lg border border-dashed border-sky-200 bg-white/80"
         >
           <div class="flex flex-col items-center gap-3 py-16 text-center">
             <UIcon
@@ -789,6 +1090,414 @@
         </UCard>
       </section>
     </div>
+    <UModal
+      v-model:open="projectModalOpen"
+      scrollable
+      class="lg:hidden overflow-y-auto"
+      :ui="{
+        content:
+          'p-0 ring-0 bg-transparent shadow-none w-[94vw] ' +
+          'sm:max-w-[680px] md:max-w-[760px]',
+        overlay: 'bg-slate-900/30 backdrop-blur-sm',
+      }"
+    >
+      <template #content>
+        <div class="max-h-[85vh] overflow-y-auto">
+          <UCard
+            v-if="selectedProject"
+            class="rounded-lg border border-sky-200 bg-white/95"
+            :ui="{
+              body: 'flex flex-col',
+              footer: 'mt-4',
+              root:
+                'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+                'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+                'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+                'origin-(--reka-popover-content-transform-origin) ' +
+                'focus:outline-none pointer-events-auto',
+            }"
+          >
+            <template #header>
+              <div class="flex flex-col gap-2 sm:gap-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="space-y-1 sm:space-y-2">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                    >
+                      Детали проекта
+                    </p>
+                    <h2
+                      class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                    >
+                      {{ selectedProject.name }}
+                    </h2>
+                  </div>
+                  <UButton
+                    variant="ghost"
+                    color="neutral"
+                    icon="i-heroicons-x-mark"
+                    aria-label="Закрыть"
+                    :class="dangerButtonClass"
+                    @click="projectModalOpen = false"
+                  />
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge
+                    class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                  >
+                    {{ selectedProject.tasksCount }} задач
+                  </UBadge>
+                  <UBadge
+                    :class="hotBadgeClass(selectedProject.hotTasksCount)"
+                    class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                  >
+                    Горящие: {{ selectedProject.hotTasksCount }} шт.
+                  </UBadge>
+                </div>
+              </div>
+            </template>
+
+            <div class="flex flex-1 flex-col gap-4">
+              <p
+                class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
+              >
+                {{ selectedProject.description }}
+              </p>
+              <UAlert
+                v-if="accessError"
+                icon="i-heroicons-exclamation-circle"
+                title="Нет доступа"
+                :description="accessError"
+                :ui="alertUi"
+                class="border border-rose-200 bg-rose-50 text-slate-900"
+              />
+              <UAlert
+                v-if="accessNotice"
+                icon="i-heroicons-information-circle"
+                title="Запрос доступа"
+                :description="accessNotice"
+                :ui="alertUi"
+                class="border border-sky-200 bg-sky-50 text-slate-900"
+              />
+              <UAlert
+                v-if="errorMessage"
+                icon="i-heroicons-exclamation-circle"
+                title="Ошибка"
+                :description="errorMessage"
+                :ui="alertUi"
+                class="border border-rose-200 bg-rose-50 text-slate-900"
+              />
+
+              <UCollapsible
+                v-if="openMembersId === selectedProject.id"
+                :open="openMembersId === selectedProject.id"
+              >
+                <div
+                  class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3"
+                >
+                  <p
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
+                  >
+                    Участники:
+                  </p>
+                  <div
+                    v-if="membersLoadingId === selectedProject.id"
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                  >
+                    Загрузка участников...
+                  </div>
+                  <div
+                    v-else-if="membersError[selectedProject.id]"
+                    class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-rose-600"
+                  >
+                    {{ membersError[selectedProject.id] }}
+                  </div>
+                  <div v-else class="h-12 space-y-1 overflow-y-auto pr-1">
+                    <div
+                      v-if="
+                        hasMembersLoaded(selectedProject.id) &&
+                        !membersForProject(selectedProject.id).length
+                      "
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                    >
+                      Пока участников нет.
+                    </div>
+                    <div
+                      v-for="member in membersForProject(selectedProject.id)"
+                      :key="member.id"
+                      class="flex items-center justify-between text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-700"
+                    >
+                      <div class="min-w-0">
+                        <span
+                          class="truncate font-semibold text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                        >
+                          {{ member.name }}
+                        </span>
+                        <span
+                          v-if="member.email"
+                          class="truncate text-slate-500 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                        >
+                          · {{ member.email }}
+                        </span>
+                      </div>
+                      <UBadge
+                        v-if="member.role === 'OWNER'"
+                        class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-slate-700"
+                      >
+                        Owner
+                      </UBadge>
+                    </div>
+                  </div>
+                </div>
+              </UCollapsible>
+            </div>
+
+            <template #footer>
+              <div class="flex w-full flex-col gap-3">
+                <UButton
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-heroicons-arrow-right-circle"
+                  leading
+                  @click="openBoardFromModal"
+                >
+                  Открыть
+                </UButton>
+                <UButton
+                  v-if="selectedGroup === 'my'"
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-heroicons-user-group"
+                  leading
+                  @click="toggleMembers(selectedProject.id)"
+                >
+                  Список участников
+                </UButton>
+                <UButton
+                  v-if="selectedGroup === 'my'"
+                  :class="[baseButtonClass, dangerButtonClass]"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-heroicons-trash"
+                  leading
+                  :loading="isActionLoading('leave')"
+                  :disabled="loading || isActionLoading('request')"
+                  @click="handleMyAction"
+                >
+                  Удалить из «Моих»
+                </UButton>
+                <UButton
+                  v-else
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-heroicons-user-plus"
+                  leading
+                  :loading="isActionLoading('request')"
+                  :disabled="loading || isActionLoading('leave')"
+                  @click="requestAccess"
+                >
+                  Запросить доступ
+                </UButton>
+              </div>
+            </template>
+          </UCard>
+        </div>
+      </template>
+    </UModal>
+    <UModal
+      v-model:open="taskModalOpen"
+      scrollable
+      :ui="{
+        content:
+          'p-0 ring-0 bg-transparent shadow-none w-[94vw] ' +
+          'sm:max-w-[680px] md:max-w-[760px]',
+        overlay: 'bg-slate-900/30 backdrop-blur-sm',
+      }"
+    >
+      <template #content>
+        <div class="max-h-[85vh] overflow-y-auto">
+          <UCard
+            v-if="activeTask"
+            class="rounded-lg border border-sky-200 bg-white/95"
+            :ui="{
+              body: 'flex flex-col gap-4',
+              footer: 'mt-4',
+              root:
+                'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+                'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+                'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+                'origin-(--reka-popover-content-transform-origin) ' +
+                'focus:outline-none pointer-events-auto',
+            }"
+          >
+            <template #header>
+              <div class="flex flex-col gap-2 sm:gap-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="space-y-1 sm:space-y-2">
+                    <p
+                      class="text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 uppercase tracking-[0.3em] text-slate-600"
+                    >
+                      Карточка
+                    </p>
+                    <h2
+                      class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
+                    >
+                      {{ activeTask.title }}
+                    </h2>
+                  </div>
+                  <UButton
+                    variant="ghost"
+                    color="neutral"
+                    icon="i-heroicons-x-mark"
+                    aria-label="Закрыть"
+                    :class="dangerButtonClass"
+                    @click="closeTaskModal"
+                  />
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge
+                    class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                  >
+                    {{ statusLabels[activeTask.status] }}
+                  </UBadge>
+                  <UBadge
+                    :class="priorityBadgeClass(activeTask.priority)"
+                    class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                  >
+                    {{ priorityLabels[activeTask.priority] }}
+                  </UBadge>
+                  <UBadge
+                    v-if="activeTask.isOverdue"
+                    class="rounded-full border border-rose-200 bg-rose-100 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold uppercase tracking-[0.2em] text-rose-800"
+                  >
+                    Просрочено
+                  </UBadge>
+                </div>
+              </div>
+            </template>
+
+            <div class="grid gap-4">
+              <UFormField label="Название" :ui="fieldUi" class="w-full">
+                <UInput
+                  v-model.trim="taskDraft.title"
+                  placeholder="Название"
+                  :ui="inputUi"
+                  @blur="commitTaskTitle"
+                  @keydown.enter.prevent="commitTaskTitle"
+                />
+              </UFormField>
+              <UFormField label="Описание" :ui="fieldUi" class="w-full">
+                <UTextarea
+                  v-model.trim="taskDraft.description"
+                  placeholder="Описание"
+                  :rows="3"
+                  class="min-h-[96px]"
+                  :ui="textareaUi"
+                  @blur="commitTaskDescription"
+                />
+              </UFormField>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <UFormField label="Исполнитель" :ui="fieldUi" class="w-full">
+                  <USelectMenu
+                    :items="assigneeOptions"
+                    :model-value="taskDraft.assigneeId"
+                    value-key="value"
+                    label-key="label"
+                    placeholder="Без исполнителя"
+                    class="w-full"
+                    :ui="selectUi"
+                    @update:model-value="setTaskAssigneeFromModal"
+                  />
+                </UFormField>
+                <UFormField label="Дедлайн" :ui="fieldUi" class="w-full">
+                  <UInput
+                    v-model.trim="taskDraft.dueDate"
+                    type="date"
+                    :ui="inputUi"
+                    @blur="commitTaskDueDate"
+                    @keydown.enter.prevent="commitTaskDueDate"
+                  />
+                </UFormField>
+                <UFormField label="Приоритет" :ui="fieldUi" class="w-full">
+                  <USelectMenu
+                    :items="priorityOptions"
+                    :model-value="taskDraft.priority"
+                    value-key="value"
+                    label-key="label"
+                    class="w-full"
+                    :ui="selectUi"
+                    @update:model-value="setTaskPriorityFromModal"
+                  />
+                </UFormField>
+                <UFormField label="Статус" :ui="fieldUi" class="w-full">
+                  <USelectMenu
+                    :items="statusOptions"
+                    :model-value="taskDraft.status"
+                    value-key="value"
+                    label-key="label"
+                    class="w-full"
+                    :ui="selectUi"
+                    @update:model-value="setTaskStatusFromModal"
+                  />
+                </UFormField>
+              </div>
+
+              <div
+                class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 p-3"
+              >
+                <div
+                  class="space-y-1 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 text-slate-600"
+                >
+                  <p>
+                    Создал:
+                    <span class="font-semibold text-slate-900">
+                      {{
+                        activeTask.createdBy?.name ||
+                        activeTask.createdBy?.email ||
+                        "—"
+                      }}
+                    </span>
+                  </p>
+                  <p>
+                    Создано:
+                    <span class="font-semibold text-slate-900">
+                      {{ formatDateTime(activeTask.createdAt) }}
+                    </span>
+                  </p>
+                  <p>
+                    Обновлено:
+                    <span class="font-semibold text-slate-900">
+                      {{ formatDateTime(activeTask.updatedAt) }}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <template #footer>
+              <div class="flex w-full flex-wrap gap-3">
+                <UButton
+                  :class="[baseButtonClass, dangerButtonClass]"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-heroicons-trash"
+                  leading
+                  :loading="deleteTaskLoadingId === activeTask.id"
+                  :disabled="deleteTaskLoadingId === activeTask.id"
+                  @click="confirmDeleteTask(activeTask)"
+                >
+                  Удалить карточку
+                </UButton>
+              </div>
+            </template>
+          </UCard>
+        </div>
+      </template>
+    </UModal>
     <ConfirmDialog
       v-model="confirmOpen"
       :title="confirmTitle"
@@ -798,7 +1507,7 @@
       :loading="confirmLoading"
       @confirm="runConfirmedAction"
     />
-  </UContainer>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -905,6 +1614,7 @@ const otherProjects = ref<ProjectCard[]>([]);
 const loading = ref(false);
 const errorMessage = ref("");
 const accessError = ref("");
+const accessNotice = ref("");
 const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
 
 const accordionItems = [
@@ -925,6 +1635,25 @@ const accordionItems = [
 const selectedProject = ref<ProjectCard | null>(null);
 const selectedGroup = ref<ProjectGroup>("my");
 const isBoardOpen = ref(false);
+const projectModalOpen = ref(false);
+const taskModalOpen = ref(false);
+const activeTaskId = ref<string | null>(null);
+const taskDraft = reactive({
+  title: "",
+  description: "",
+  dueDate: "",
+  assigneeId: NO_ASSIGNEE_VALUE,
+  priority: "MEDIUM" as TaskPriority,
+  status: "TODO" as TaskStatus,
+});
+let taskClickTimeout: ReturnType<typeof setTimeout> | null = null;
+const closeProjectModalOnDesktop = (matches: boolean) => {
+  if (matches) {
+    projectModalOpen.value = false;
+  }
+};
+const pendingHotScroll = ref(false);
+const boardScrollRef = ref<HTMLElement | null>(null);
 const actionLoading = ref(false);
 const actionType = ref<"request" | "leave" | null>(null);
 const confirmAction = ref<ConfirmAction | null>(null);
@@ -949,10 +1678,15 @@ const editingField = ref<{
   field: "title" | "description" | "dueDate";
 } | null>(null);
 const editingValue = ref("");
-const dragState = ref<{ id: string; fromStatus: TaskStatus } | null>(null);
+const dragState = ref<{
+  id: string;
+  fromStatus: TaskStatus;
+  height: number;
+} | null>(null);
 const dragOver = ref<{ status: TaskStatus; index: number | "end" } | null>(
   null,
 );
+const wasDragging = ref(false);
 
 const createForm = reactive({
   title: "",
@@ -963,12 +1697,23 @@ const createForm = reactive({
   status: "TODO" as TaskStatus,
 });
 
+const createAccordionItems = [
+  {
+    label: "Создание карточки",
+    value: "create",
+    slot: "create",
+  },
+];
+const createAccordionOpen = ref<string | undefined>(undefined);
+
 const selectProject = (project: ProjectCard, group: ProjectGroup) => {
   selectedProject.value = project;
   selectedGroup.value = group;
   isBoardOpen.value = false;
+  pendingHotScroll.value = false;
   boardError.value = "";
   accessError.value = "";
+  accessNotice.value = "";
   boardStats.value = null;
   if (openMembersId.value && openMembersId.value !== project.id) {
     openMembersId.value = null;
@@ -980,22 +1725,61 @@ const projectButtonClass = (id: string) =>
     ? "border-sky-300 bg-sky-100"
     : "hover:bg-sky-50";
 
-const openBoard = () => {
-  if (!selectedProject.value) return;
+const openBoard = (options: { scrollToHot?: boolean } = {}) => {
+  if (!selectedProject.value) return false;
   boardError.value = "";
   if (!selectedProject.value.role) {
     accessError.value =
       "Вы не состоите в этом проекте. Запросите доступ у владельца.";
-    return;
+    return false;
   }
+  accessNotice.value = "";
+  pendingHotScroll.value = Boolean(options.scrollToHot);
   accessError.value = "";
   isBoardOpen.value = true;
   boardError.value = "";
   void ensureMembersLoaded();
+  return true;
+};
+
+const openProjectDetails = (project: ProjectCard, group: ProjectGroup) => {
+  selectProject(project, group);
+  projectModalOpen.value = true;
+};
+
+onMounted(() => {
+  const mediaQuery = window.matchMedia("(min-width: 1024px)");
+  const handleChange = (event: MediaQueryListEvent) => {
+    closeProjectModalOnDesktop(event.matches);
+  };
+
+  closeProjectModalOnDesktop(mediaQuery.matches);
+  mediaQuery.addEventListener("change", handleChange);
+
+  onBeforeUnmount(() => {
+    mediaQuery.removeEventListener("change", handleChange);
+  });
+});
+
+const openBoardFromProject = (
+  project: ProjectCard,
+  group: ProjectGroup,
+  options: { scrollToHot?: boolean } = {},
+) => {
+  selectProject(project, group);
+  const opened = openBoard(options);
+  projectModalOpen.value = !opened;
+};
+
+const openBoardFromModal = () => {
+  if (openBoard()) {
+    projectModalOpen.value = false;
+  }
 };
 
 const closeBoard = () => {
   isBoardOpen.value = false;
+  pendingHotScroll.value = false;
   editingField.value = null;
   dragState.value = null;
   dragOver.value = null;
@@ -1007,8 +1791,32 @@ const hotBadgeClass = (count: number) => {
   return "border-rose-200 bg-rose-100 text-rose-800";
 };
 
+const isHotTask = (task: TaskItem, status: TaskStatus) =>
+  status !== "DONE" && (task.priority === "HIGH" || task.priority === "URGENT");
+
+const scrollToHotTask = async () => {
+  await nextTick();
+  const container = boardScrollRef.value;
+  if (!container) return;
+  const hotCard = container.querySelector<HTMLElement>(
+    '[data-hot-task="true"]',
+  );
+  if (hotCard) {
+    hotCard.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "start",
+    });
+  }
+};
+
 const bodyTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const alertUi = {
+  title: bodyTextClass,
+  description: bodyTextClass,
+};
 
 const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
 
@@ -1016,18 +1824,18 @@ const primaryButtonClass =
   "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
 
 const dangerButtonClass =
-  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
+  "font-bold text-slate-900 border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
 
 const inputUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
+  base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
 };
 
 const textareaUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
+  base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
 };
 
 const selectUi = {
-  base: "w-full bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",
+  base: `w-full bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
 };
 
 const fieldUi = {
@@ -1267,12 +2075,15 @@ const requestAccess = async () => {
   actionLoading.value = true;
   actionType.value = "request";
   errorMessage.value = "";
+  accessNotice.value = "";
 
   try {
     await $fetch("/api/project", {
       method: "POST",
       body: { action: "request_access", projectId: project.id },
     });
+    accessNotice.value =
+      "Запрос доступа отправлен. Ожидайте подтверждения владельца.";
     await loadProjects();
   } catch (err) {
     errorMessage.value = getErrorMessage(err, "Не удалось запросить доступ.");
@@ -1406,10 +2217,129 @@ const formatDateInput = (value: string | null) =>
   value ? value.slice(0, 10) : "";
 
 const formatDueDate = (value: string | null) => {
-  if (!value) return "Без дедлайна";
+  if (!value) return "—";
   const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "Без дедлайна";
+  if (Number.isNaN(parsed.getTime())) return "—";
   return parsed.toLocaleDateString("ru-RU");
+};
+
+const formatDateTime = (value: string | null) => {
+  if (!value) return "—";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "—";
+  return parsed.toLocaleString("ru-RU");
+};
+
+const activeTask = computed(() => {
+  if (!activeTaskId.value) return null;
+  const statuses: TaskStatus[] = ["TODO", "IN_PROGRESS", "REVIEW", "DONE"];
+  for (const status of statuses) {
+    const task = tasksByStatus.value[status].find(
+      (item) => item.id === activeTaskId.value,
+    );
+    if (task) return task;
+  }
+  return null;
+});
+
+const syncTaskDraft = (task: TaskItem) => {
+  taskDraft.title = task.title || "";
+  taskDraft.description = task.description || "";
+  taskDraft.dueDate = formatDateInput(task.dueDate);
+  taskDraft.assigneeId = task.assignee?.id || NO_ASSIGNEE_VALUE;
+  taskDraft.priority = task.priority;
+  taskDraft.status = task.status;
+};
+
+const openTaskModal = (task: TaskItem) => {
+  activeTaskId.value = task.id;
+  syncTaskDraft(task);
+  taskModalOpen.value = true;
+  void ensureMembersLoaded();
+};
+
+const closeTaskModal = () => {
+  taskModalOpen.value = false;
+  activeTaskId.value = null;
+};
+
+const handleTaskClick = (task: TaskItem, event: MouseEvent) => {
+  if (wasDragging.value) return;
+  const target = event.target as HTMLElement | null;
+  if (target?.closest("[data-no-modal]")) return;
+  if (taskClickTimeout) clearTimeout(taskClickTimeout);
+  taskClickTimeout = setTimeout(() => {
+    openTaskModal(task);
+    taskClickTimeout = null;
+  }, 160);
+};
+
+const handleTaskEdit = (task: TaskItem, field: "title" | "description") => {
+  if (taskClickTimeout) {
+    clearTimeout(taskClickTimeout);
+    taskClickTimeout = null;
+  }
+  startEditing(task, field);
+};
+
+const commitTaskTitle = async () => {
+  const task = activeTask.value;
+  if (!task) return;
+  const nextTitle = taskDraft.title.trim();
+  if (!nextTitle) {
+    boardError.value = "Название задачи не может быть пустым.";
+    taskDraft.title = task.title;
+    return;
+  }
+  if (nextTitle === task.title) return;
+  await updateTaskField(task, { title: nextTitle });
+};
+
+const commitTaskDescription = async () => {
+  const task = activeTask.value;
+  if (!task) return;
+  const nextDescription = taskDraft.description.trim();
+  const normalized = nextDescription ? nextDescription : null;
+  if (normalized === (task.description || null)) return;
+  await updateTaskField(task, { description: normalized });
+};
+
+const commitTaskDueDate = async () => {
+  const task = activeTask.value;
+  if (!task) return;
+  const nextDate = taskDraft.dueDate.trim();
+  const current = formatDateInput(task.dueDate);
+  if (nextDate === current) return;
+  await updateTaskField(task, {
+    dueDate: nextDate ? new Date(nextDate).toISOString() : null,
+  });
+};
+
+const setTaskAssigneeFromModal = (value: unknown) => {
+  const task = activeTask.value;
+  if (!task) return;
+  if (typeof value === "string") {
+    taskDraft.assigneeId = value;
+  }
+  setTaskAssignee(task, value);
+};
+
+const setTaskPriorityFromModal = (value: unknown) => {
+  const task = activeTask.value;
+  if (!task) return;
+  if (typeof value === "string") {
+    taskDraft.priority = value as TaskPriority;
+  }
+  setTaskPriority(task, value);
+};
+
+const setTaskStatusFromModal = (value: unknown) => {
+  const task = activeTask.value;
+  if (!task) return;
+  if (typeof value === "string") {
+    taskDraft.status = value as TaskStatus;
+  }
+  setTaskStatus(task, value);
 };
 
 const computeOverdue = (task: TaskItem) => {
@@ -1462,16 +2392,39 @@ const taskAlertMeta = (task: TaskItem) => {
 const taskCardClass = (task: TaskItem, status: TaskStatus, index: number) => {
   const classes: string[] = [];
 
-  if (dragOver.value?.status === status) {
-    const isMatch =
-      dragOver.value.index === "end"
-        ? index === tasksByStatus.value[status].length - 1
-        : dragOver.value.index === index;
-    if (isMatch) classes.push("ring-2 ring-sky-300");
+  if (dragOver.value?.status === status && dragOver.value.index !== "end") {
+    if (dragOver.value.index === index) classes.push("ring-2 ring-sky-300");
   }
 
   return classes.filter(Boolean).join(" ");
 };
+
+const isDragPlaceholder = (status: TaskStatus, index: number) =>
+  Boolean(
+    dragState.value &&
+    dragOver.value?.status === status &&
+    dragOver.value.index === index,
+  );
+
+const isDragPlaceholderEnd = (status: TaskStatus) =>
+  Boolean(
+    dragState.value &&
+    dragOver.value?.status === status &&
+    dragOver.value.index === "end",
+  );
+
+const isDraggingTask = (taskId: string) => dragState.value?.id === taskId;
+
+const shouldShowEmptyColumn = (status: TaskStatus, count: number) => {
+  if (count > 0) return false;
+  if (!dragState.value) return true;
+  return dragOver.value?.status !== status;
+};
+
+const dragPlaceholderStyle = computed(() => {
+  if (!dragState.value?.height) return undefined;
+  return { height: `${Math.max(48, dragState.value.height)}px` };
+});
 
 const isEditing = (
   taskId: string,
@@ -1606,7 +2559,14 @@ const loadBoard = async (projectId: string) => {
 
     recomputeBoardStats();
     syncProjectCounts(projectId);
+    const shouldScrollHot = pendingHotScroll.value;
+    pendingHotScroll.value = false;
+    boardLoading.value = false;
+    if (shouldScrollHot) {
+      await scrollToHotTask();
+    }
   } catch (err) {
+    pendingHotScroll.value = false;
     const typed = err as {
       statusCode?: number;
       data?: { statusCode?: number; statusMessage?: string };
@@ -1866,7 +2826,13 @@ const moveTaskLocal = (
 
 const handleDragStart = (event: DragEvent, task: TaskItem) => {
   if (editingField.value?.id === task.id) return;
-  dragState.value = { id: task.id, fromStatus: task.status };
+  const target = event.currentTarget as HTMLElement | null;
+  dragState.value = {
+    id: task.id,
+    fromStatus: task.status,
+    height: target?.getBoundingClientRect().height ?? 64,
+  };
+  wasDragging.value = true;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", task.id);
@@ -1876,10 +2842,43 @@ const handleDragStart = (event: DragEvent, task: TaskItem) => {
 const handleDragEnd = () => {
   dragState.value = null;
   dragOver.value = null;
+  setTimeout(() => {
+    wasDragging.value = false;
+  }, 0);
 };
 
 const handleDragOver = (status: TaskStatus, index: number | "end") => {
+  if (!dragState.value) return;
+  if (dragOver.value?.status === status && dragOver.value.index === index) {
+    return;
+  }
   dragOver.value = { status, index };
+};
+
+const handleColumnDragOver = (status: TaskStatus, event: DragEvent) => {
+  if (!dragState.value) return;
+  const column = event.currentTarget as HTMLElement | null;
+  if (!column) return;
+  const cards = Array.from(
+    column.querySelectorAll<HTMLElement>("[data-task-card]:not([hidden])"),
+  );
+  if (!cards.length) {
+    handleDragOver(status, "end");
+    return;
+  }
+  const pointerY = event.clientY;
+  const firstRect = cards[0].getBoundingClientRect();
+  const lastRect = cards[cards.length - 1].getBoundingClientRect();
+  const topThreshold = firstRect.top + firstRect.height * 0.25;
+  const bottomThreshold = lastRect.bottom - lastRect.height * 0.25;
+
+  if (pointerY < topThreshold) {
+    handleDragOver(status, 0);
+    return;
+  }
+  if (pointerY > bottomThreshold) {
+    handleDragOver(status, "end");
+  }
 };
 
 const handleDrop = async (status: TaskStatus, index: number | "end") => {
@@ -1935,7 +2934,33 @@ watch(
   },
 );
 
+watch(taskModalOpen, (open) => {
+  if (!open) {
+    activeTaskId.value = null;
+  }
+});
+
+watch(activeTask, (task) => {
+  if (!task && taskModalOpen.value) {
+    closeTaskModal();
+  }
+});
+
+onBeforeUnmount(() => {
+  if (taskClickTimeout) {
+    clearTimeout(taskClickTimeout);
+    taskClickTimeout = null;
+  }
+});
+
 onMounted(() => {
   loadProjects();
 });
 </script>
+
+<style scoped>
+.task-move {
+  transition: transform 180ms ease;
+  will-change: transform;
+}
+</style>
