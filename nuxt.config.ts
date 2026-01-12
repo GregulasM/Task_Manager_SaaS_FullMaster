@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     "@nuxt/hints",
     "@nuxt/image",
     "@nuxt/test-utils",
+    "@vueuse/motion/nuxt",
   ],
   runtimeConfig: {
     authSecret:

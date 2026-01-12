@@ -353,7 +353,7 @@ const logout = async () => {
     });
     user.value = null;
     hotTasks.value = 0;
-    await navigateTo("/auth/login");
+    await navigateTo("/main");
   } finally {
     logoutLoading.value = false;
   }

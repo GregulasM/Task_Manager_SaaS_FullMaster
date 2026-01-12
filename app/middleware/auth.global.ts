@@ -1,5 +1,9 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (to.path.startsWith("/auth")) return;
+  const publicRoutes = ["/main", "/about"];
+
+  if (to.path.startsWith("/auth") || publicRoutes.includes(to.path)) {
+    return;
+  }
 
   try {
     const headers = process.server ? useRequestHeaders(["cookie"]) : undefined;
@@ -8,6 +12,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
       headers,
     });
   } catch {
-    return navigateTo("/auth/login");
+    return navigateTo("/main");
   }
 });
