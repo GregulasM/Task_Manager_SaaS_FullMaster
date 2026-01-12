@@ -1,5 +1,13 @@
 <template>
   <UCard
+    :ui="{
+      root:
+        'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+        'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+        'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+        'origin-(--reka-popover-content-transform-origin) ' +
+        'focus:outline-none pointer-events-auto',
+    }"
     as="form"
     class="rounded-3xl border border-sky-200/60 bg-white/90 shadow-2xl shadow-blue-200/50 backdrop-blur-md"
     @submit.prevent="submit"

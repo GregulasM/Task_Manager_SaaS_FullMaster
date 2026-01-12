@@ -54,14 +54,15 @@
 
       <!-- Кнопка вниз -->
       <div class="mt-10 sm:mt-14">
-        <a
-          href="#mission"
+        <button
+          type="button"
           :class="btnClass"
           class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:gap-3 sm:px-8 sm:py-4"
+          @click="scrollToSection('mission')"
         >
           <span>Наша миссия</span>
           <span aria-hidden="true" class="text-sky-600">↓</span>
-        </a>
+        </button>
       </div>
     </section>
 
@@ -150,6 +151,14 @@ const btnClass =
 // Класс карточки с переливающимся градиентом
 const cardClass =
   "group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-sky-50/80 to-blue-50/60 p-4 shadow-xl shadow-sky-200/30 transition-all duration-500 hover:shadow-2xl hover:shadow-sky-300/40 hover:-translate-y-1 sm:rounded-3xl sm:p-6";
+
+// Плавная прокрутка к секции
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
 
 const values = [
   {

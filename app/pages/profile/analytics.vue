@@ -1,5 +1,15 @@
 <template>
-  <UCard class="rounded-[32px] border border-sky-200 bg-white/90">
+  <UCard
+    class="rounded-[32px] border border-sky-200 bg-white/90"
+    :ui="{
+      root:
+        'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+        'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+        'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+        'origin-(--reka-popover-content-transform-origin) ' +
+        'focus:outline-none pointer-events-auto',
+    }"
+  >
     <template #header>
       <div
         class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"

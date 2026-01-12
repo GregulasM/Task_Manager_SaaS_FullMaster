@@ -1,8 +1,29 @@
 <template>
-  <UContainer>
+  <UContainer
+    :ui="{
+      content:
+        'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+        'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+        'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+        'origin-(--reka-popover-content-transform-origin) ' +
+        'focus:outline-none pointer-events-auto',
+      arrow: 'hidden',
+    }"
+  >
     <div class="flex flex-col gap-6 lg:flex-row lg:grid-cols-[320px,1fr]">
       <aside class="space-y-4 basis-2/8">
-        <UCard class="rounded-[28px] border border-sky-200 bg-white/90">
+        <UCard
+          :ui="{
+            root:
+              'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+              'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+              'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+              'origin-(--reka-popover-content-transform-origin) ' +
+              'focus:outline-none pointer-events-auto',
+            arrow: 'hidden',
+          }"
+          class="rounded-[28px] border border-sky-200 bg-white/90"
+        >
           <template #header>
             <div class="flex items-center justify-between">
               <div class="space-y-1">
@@ -142,7 +163,16 @@
         <UCard
           v-if="selectedProject && !isBoardOpen"
           class="rounded-[32px] border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
-          :ui="{ body: 'flex flex-col lg:flex-1', footer: 'lg:mt-auto' }"
+          :ui="{
+            body: 'flex flex-col lg:flex-1',
+            footer: 'lg:mt-auto',
+            root:
+              'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+              'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+              'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+              'origin-(--reka-popover-content-transform-origin) ' +
+              'focus:outline-none pointer-events-auto',
+          }"
         >
           <template #header>
             <div
@@ -313,7 +343,15 @@
         <UCard
           v-else-if="selectedProject && isBoardOpen"
           class="rounded-[32px] border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
-          :ui="{ body: 'flex flex-col lg:flex-1' }"
+          :ui="{
+            body: 'flex flex-col lg:flex-1',
+            root:
+              'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+              'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+              'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+              'origin-(--reka-popover-content-transform-origin) ' +
+              'focus:outline-none pointer-events-auto',
+          }"
         >
           <template #header>
             <div
@@ -721,6 +759,14 @@
         </UCard>
 
         <UCard
+          :ui="{
+            root:
+              'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
+              'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
+              'data-[state=closed]:animate-[scale-out_100ms_ease-in] ' +
+              'origin-(--reka-popover-content-transform-origin) ' +
+              'focus:outline-none pointer-events-auto',
+          }"
           v-else
           class="rounded-[32px] border border-dashed border-sky-200 bg-white/80"
         >

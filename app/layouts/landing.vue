@@ -82,71 +82,113 @@
       class="sticky top-0 z-30 border-b border-sky-200/70 bg-gradient-to-r from-white/95 via-sky-50/90 to-white/95 shadow-sm shadow-sky-100/40 backdrop-blur-md"
     >
       <nav
-        class="mx-auto flex max-w-5xl items-center justify-center gap-2 px-1 py-1.5 3xs:gap-1 3xs:px-1 2xs:px-3 xs:px-4 sm:gap-4 sm:px-6 sm:py-2"
+        class="flex w-full items-center justify-between gap-2 px-3 py-1.5 xs:px-4 md:gap-1 md:px-2 md:py-2"
       >
-        <div class="flex w-full justify-center">
-          <!-- Левая часть: Лого -->
-          <div class="flex items-center gap-1 3xs:gap-1 sm:gap-3">
+        <!-- Левая часть: Лого -->
+        <div class="flex shrink-0 items-center">
+          <NuxtLink
+            :to="isAuthenticated ? `/` : `/main`"
+            class="flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50/80 px-1.5 py-0.5 transition hover:-translate-y-0.5 hover:bg-sky-100/80 md:gap-1 md:px-2 md:py-1.5"
+          >
+            <UIcon
+              name="i-heroicons-sparkles"
+              class="h-4 w-4 text-sky-600 md:h-5 md:w-5"
+            />
+            <p :class="headingClass" class="text-sky-600">
+              FullMaster<span class="hidden text-slate-900 md:inline"
+                >: Task Manager</span
+              >
+            </p>
+          </NuxtLink>
+        </div>
+
+        <!-- Центр: Навигация -->
+        <div class="flex items-center gap-2 md:gap-4">
+          <NuxtLink
+            v-for="item in nav"
+            :key="item.to"
+            :to="item.to"
+            :class="btnClass"
+            class="flex items-center gap-1 px-2 md:gap-2 md:px-3"
+          >
+            <!-- Иконка (всегда видна, но на sm+ можно скрыть если надо) -->
+            <UIcon :name="item.icon" class="h-4 w-4 md:h-5 md:w-5" />
+            <!-- Текст (скрыт на маленьких экранах) -->
+            <span class="hidden md:inline">{{ item.label }}</span>
+            <!-- Индикация (точка) -->
+            <span
+              class="h-2 w-2 rounded-full border md:h-2.5 md:w-2.5"
+              :class="navDotClass(item)"
+            />
+          </NuxtLink>
+        </div>
+
+        <!-- Правая часть: Auth кнопки или информация о пользователе -->
+        <div class="flex shrink-0 items-center gap-2 md:gap-2">
+          <!-- Если пользователь залогинен -->
+          <template v-if="isAuthenticated">
             <NuxtLink
-              to="/main"
-              class="flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50/80 px-1.5 py-0.5 transition hover:-translate-y-0.5 hover:bg-sky-100/80 3xs:gap-1.5 3xs:px-2 3xs:py-1 sm:gap-2 sm:px-3 sm:py-1.5"
+              to="/profile"
+              :class="btnClass"
+              class="flex items-center gap-1 px-2 md:gap-2 md:px-3"
             >
               <UIcon
-                name="i-heroicons-sparkles"
-                class="h-2.5 w-2.5 text-sky-600 3xs:h-3 3xs:w-3 sm:h-4 sm:w-4"
+                name="i-heroicons-user-circle"
+                class="h-4 w-4 text-sky-600 md:h-5 md:w-5"
               />
-              <p :class="headingClass" class="text-sky-600">
-                FullMaster: <span class="text-slate-900">Task Manager</span>
-              </p>
+              <span class="hidden md:inline">{{ userName }}</span>
             </NuxtLink>
-          </div>
-        </div>
-
-        <div class="flex w-full justify-center">
-          <!-- Центр: Навигация -->
-          <div class="flex items-center gap-1 3xs:gap-1 sm:gap-3">
             <NuxtLink
-              v-for="item in nav"
-              :key="item.to"
-              :to="item.to"
+              to="/"
               :class="btnClass"
-              class="flex items-center gap-0.5 px-2 3xs:gap-1 3xs:px-2.5 sm:px-3"
+              class="flex items-center gap-1 px-2 md:gap-2 md:px-3"
             >
-              <span>{{ item.label }}</span>
-              <!-- Индикация (точка) -->
-              <span
-                class="ml-auto h-2.5 w-2.5 rounded-full border"
-                :class="navDotClass(item)"
-              />
+              <UIcon name="i-heroicons-folder" class="h-4 w-4 md:h-5 md:w-5" />
+              <span class="hidden md:inline">К проектам</span>
             </NuxtLink>
-          </div>
-        </div>
+          </template>
 
-        <div class="flex w-full justify-center">
-          <!-- Правая часть: Auth кнопки -->
-          <div class="flex items-center gap-1 3xs:gap-1 sm:gap-3">
+          <!-- Если пользователь не залогинен -->
+          <template v-else>
             <NuxtLink
               to="/auth/login"
               :class="btnClass"
-              class="px-2 3xs:px-2.5 sm:px-3"
+              class="flex items-center gap-1 px-2 md:gap-2 md:px-3"
             >
-              Войти
+              <UIcon
+                name="i-heroicons-arrow-right-on-rectangle"
+                class="h-4 w-4 md:h-5 md:w-5"
+              />
+              <span class="hidden md:inline">Войти</span>
             </NuxtLink>
             <NuxtLink
               to="/auth/register"
               :class="btnClass"
-              class="px-2 3xs:px-2.5 sm:px-3"
+              class="flex items-center gap-1 px-2 md:gap-2 md:px-3"
             >
-              Регистрация
+              <UIcon
+                name="i-heroicons-user-plus"
+                class="h-4 w-4 md:h-5 md:w-5"
+              />
+              <span class="hidden md:inline">Регистрация</span>
             </NuxtLink>
-          </div>
+          </template>
         </div>
       </nav>
     </header>
 
     <!-- Page wrapper — полноэкранные секции -->
     <main class="w-full">
-      <slot />
+      <Motion
+        :initial="{ opacity: 0, y: 60 }"
+        :enter="{
+          opacity: 1,
+          y: 0,
+          transition: { duration: 600, ease: 'easeOut' },
+        }"
+      >
+        <slot />
+      </Motion>
     </main>
 
     <!-- Footer -->
@@ -162,18 +204,52 @@
 type NavItem = {
   label: string;
   to: string;
+  icon: string;
   isActive: (path: string) => boolean;
 };
 
+type UserPublic = {
+  id: string;
+  email: string;
+  name: string;
+};
+
 const route = useRoute();
+
+// Состояние пользователя
+const user = ref<UserPublic | null>(null);
+
+const isAuthenticated = computed(() => Boolean(user.value?.id));
+const userName = computed(() => user.value?.name || "Пользователь");
+
+// Загрузка данных пользователя
+const fetchUser = async () => {
+  try {
+    user.value = await $fetch<UserPublic>("/api/user", {
+      query: { me: "1" },
+    });
+  } catch {
+    user.value = null;
+  }
+};
+
+onMounted(() => {
+  fetchUser();
+});
 
 const nav: NavItem[] = [
   {
     label: "Главная",
     to: "/main",
+    icon: "i-heroicons-home",
     isActive: (p) => p === "/main" || p === "/",
   },
-  { label: "О нас", to: "/about", isActive: (p) => p === "/about" },
+  {
+    label: "О нас",
+    to: "/about",
+    icon: "i-heroicons-information-circle",
+    isActive: (p) => p === "/about",
+  },
 ];
 
 const isActive = (item: NavItem) => item.isActive(route.path);

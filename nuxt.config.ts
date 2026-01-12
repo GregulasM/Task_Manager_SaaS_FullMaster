@@ -44,9 +44,7 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/main.css"],
 
-  routeRules: {
-    "/": { redirect: "/main" },
-  },
+  routeRules: {},
 
   hooks: {
     "pages:extend"(pages) {
@@ -71,6 +69,11 @@ export default defineNuxtConfig({
 
       applyLayout(pages);
     },
+  },
+  colorMode: {
+    preference: "light",
+    fallback: "light",
+    classSuffix: "",
   },
 
   compatibilityDate: "2025-01-15",

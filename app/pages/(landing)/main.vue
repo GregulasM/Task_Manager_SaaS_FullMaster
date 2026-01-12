@@ -44,6 +44,14 @@ const sliders = [
   },
   { title: "Коллективная и персональная работа", note: "*слайдер*" },
 ];
+
+// Плавная прокрутка к секции
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
 </script>
 
 <template>
@@ -97,14 +105,15 @@ const sliders = [
 
       <!-- Кнопка "Что ещё?" -->
       <div class="mt-10 sm:mt-14">
-        <a
-          href="#more"
+        <button
+          type="button"
           :class="btnClass"
           class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:gap-3 sm:px-8 sm:py-4"
+          @click="scrollToSection('more')"
         >
           <span>Что еще?</span>
           <span aria-hidden="true" class="text-sky-600">↓</span>
-        </a>
+        </button>
       </div>
     </section>
 
