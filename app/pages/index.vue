@@ -858,9 +858,11 @@
                       :data-hot-task="
                         isHotTask(task, column.id) ? 'true' : undefined
                       "
+                      :data-dragging="
+                        isDraggingTask(task.id) ? 'true' : undefined
+                      "
                       data-task-card
                       draggable="true"
-                      :hidden="isDraggingTask(task.id)"
                       @click="handleTaskClick(task, $event)"
                       @dragstart="handleDragStart($event, task)"
                       @dragend="handleDragEnd"
@@ -1862,7 +1864,16 @@ const openBoardFromProject = (
 ) => {
   selectProject(project, group);
   const opened = openBoard(options);
-  projectModalOpen.value = !opened;
+  if (opened) {
+    projectModalOpen.value = false;
+    return;
+  }
+  if (typeof window !== "undefined") {
+    const isDesktop = window.matchMedia("(min-width: 1280px)").matches;
+    projectModalOpen.value = !isDesktop;
+    return;
+  }
+  projectModalOpen.value = true;
 };
 
 const openBoardFromModal = () => {
@@ -2495,6 +2506,10 @@ const taskAlertMeta = (task: TaskItem) => {
 const taskCardClass = (task: TaskItem, status: TaskStatus, index: number) => {
   const classes: string[] = [];
 
+  if (isDraggingTask(task.id)) {
+    classes.push("opacity-0 pointer-events-none");
+  }
+
   if (dragOver.value?.status === status && dragOver.value.index !== "end") {
     if (dragOver.value.index === index) classes.push("ring-2 ring-sky-300");
   }
@@ -2963,7 +2978,9 @@ const handleColumnDragOver = (status: TaskStatus, event: DragEvent) => {
   const column = event.currentTarget as HTMLElement | null;
   if (!column) return;
   const cards = Array.from(
-    column.querySelectorAll<HTMLElement>("[data-task-card]:not([hidden])"),
+    column.querySelectorAll<HTMLElement>(
+      "[data-task-card]:not([data-dragging='true'])",
+    ),
   );
   if (!cards.length) {
     handleDragOver(status, "end");
