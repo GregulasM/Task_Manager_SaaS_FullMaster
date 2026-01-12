@@ -29,7 +29,9 @@
             Загрузка
           </UBadge>
           <UButton
-            class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+            :class="[baseButtonClass, primaryButtonClass]"
+            variant="ghost"
+            color="neutral"
             icon="i-heroicons-plus"
             leading
             :disabled="formMode !== null || listLoading"
@@ -74,7 +76,9 @@
 
         <div class="mt-4 flex flex-wrap items-center gap-3">
           <UButton
-            class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+            :class="[baseButtonClass, primaryButtonClass]"
+            variant="ghost"
+            color="neutral"
             icon="i-heroicons-check"
             leading
             :loading="formLoading"
@@ -84,8 +88,9 @@
             {{ formMode === "create" ? "Создать" : "Сохранить" }}
           </UButton>
           <UButton
-            variant="outline"
-            class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+            :class="[baseButtonClass, dangerButtonClass]"
+            variant="ghost"
+            color="neutral"
             icon="i-heroicons-x-mark"
             leading
             :disabled="formLoading"
@@ -169,8 +174,9 @@
             >
               <template v-if="canManage(project)">
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-user-plus"
                   leading
                   @click="toggleInvite(project.id)"
@@ -178,8 +184,9 @@
                   Пригласить людей
                 </UButton>
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-user-group"
                   leading
                   @click="toggleMembers(project.id)"
@@ -187,8 +194,9 @@
                   Список участников
                 </UButton>
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-pencil-square"
                   leading
                   @click="startEdit(project)"
@@ -196,8 +204,9 @@
                   Изменить
                 </UButton>
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, dangerButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-trash"
                   leading
                   :loading="deleteLoadingId === project.id"
@@ -209,8 +218,9 @@
               </template>
               <template v-else>
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-user-group"
                   leading
                   @click="toggleMembers(project.id)"
@@ -218,8 +228,9 @@
                   Список участников
                 </UButton>
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, dangerButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-arrow-left-on-rectangle"
                   leading
                   :loading="leaveLoadingId === project.id"
@@ -293,9 +304,10 @@
                     </UBadge>
                     <UButton
                       v-if="canRemoveMember(project, member)"
-                      variant="outline"
+                      :class="[baseButtonClass, dangerButtonClass]"
+                      variant="ghost"
+                      color="neutral"
                       size="xs"
-                      class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
                       icon="i-heroicons-user-minus"
                       :loading="isRemovingMember(project.id, member.id)"
                       :disabled="isRemovingMember(project.id, member.id)"
@@ -323,7 +335,9 @@
             </UFormField>
             <div class="mt-3 flex flex-wrap items-center gap-3">
               <UButton
-                class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, primaryButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-paper-airplane"
                 leading
                 :loading="inviteLoading"
@@ -333,8 +347,9 @@
                 Отправить
               </UButton>
               <UButton
-                variant="outline"
-                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, dangerButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-x-mark"
                 leading
                 :disabled="inviteLoading"
@@ -460,6 +475,17 @@ const form = reactive({
   name: "",
   description: "",
 });
+
+const bodyTextClass =
+  "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+
+const primaryButtonClass =
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
+
+const dangerButtonClass =
+  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
 
 const inputUi = {
   base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",

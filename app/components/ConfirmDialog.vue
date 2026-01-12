@@ -29,15 +29,21 @@
                 <UIcon :name="iconName" class="h-5 w-5" />
               </div>
               <div class="space-y-2">
-                <p class="text-sm uppercase tracking-widest text-slate-500">
+                <p
+                  :class="[
+                    'uppercase tracking-widest text-slate-500',
+                    bodyTextClass,
+                  ]"
+                >
                   Подтверждение
                 </p>
-                <h3
-                  class="text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10 font-semibold text-slate-900"
-                >
+                <h3 :class="['font-semibold text-slate-900', headingTextClass]">
                   {{ title }}
                 </h3>
-                <p v-if="description" class="text-sm text-slate-600">
+                <p
+                  v-if="description"
+                  :class="['text-slate-600', bodyTextClass]"
+                >
                   {{ description }}
                 </p>
               </div>
@@ -56,8 +62,7 @@
               {{ confirmText }}
             </UButton>
             <UButton
-              variant="outline"
-              class="rounded-full border-sky-200 text-slate-900"
+              :class="cancelButtonClass"
               :disabled="loading"
               icon="i-heroicons-x-mark"
               leading
@@ -91,10 +96,22 @@ const emit = defineEmits<{
   (e: "cancel"): void;
 }>();
 
+const headingTextClass =
+  "text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10";
+const bodyTextClass =
+  "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const baseButtonClass =
+  "rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5";
+
+const primaryButtonClass = `${baseButtonClass} border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500 ${bodyTextClass}`;
+
+const dangerButtonClass = `${baseButtonClass} border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500 ${bodyTextClass}`;
+
+const cancelButtonClass = dangerButtonClass;
+
 const confirmClass = computed(() =>
-  props.tone === "danger"
-    ? "rounded-full bg-rose-500 text-white hover:bg-rose-400"
-    : "rounded-full bg-sky-200 text-slate-900 hover:bg-sky-100",
+  props.tone === "danger" ? dangerButtonClass : primaryButtonClass,
 );
 
 const iconName = computed(() =>

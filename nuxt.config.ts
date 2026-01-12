@@ -45,7 +45,7 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   routeRules: {
-    "/": { prerender: true },
+    "/": { redirect: "/main" },
   },
 
   hooks: {
@@ -54,6 +54,11 @@ export default defineNuxtConfig({
         for (const page of pageList) {
           if (page.path?.startsWith("/auth")) {
             page.meta = { ...(page.meta || {}), layout: "auth" };
+          } else if (
+            page.path?.startsWith("/main") ||
+            page.path?.startsWith("/about")
+          ) {
+            page.meta = { ...(page.meta || {}), layout: "landing" };
           } else {
             page.meta = { ...(page.meta || {}), layout: "default" };
           }

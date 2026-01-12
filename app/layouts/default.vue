@@ -23,8 +23,9 @@
                     </p>
                   </div>
                   <UButton
-                    variant="outline"
-                    class="rounded-full border-sky-200 bg-white text-slate-900"
+                    :class="[baseButtonClass, primaryButtonClass]"
+                    variant="ghost"
+                    color="neutral"
                     :icon="
                       open
                         ? 'i-heroicons-chevron-up'
@@ -40,9 +41,14 @@
                   <div class="flex flex-col gap-2">
                     <UButton
                       to="/"
-                      variant="outline"
-                      class="w-full rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
-                      :class="navClass(isHome)"
+                      :class="[
+                        baseButtonClass,
+                        primaryButtonClass,
+                        'w-full',
+                        navClass(isHome),
+                      ]"
+                      variant="ghost"
+                      color="neutral"
                       icon="i-heroicons-home"
                       leading
                     >
@@ -50,9 +56,14 @@
                     </UButton>
                     <UButton
                       to="/profile/analytics"
-                      variant="outline"
-                      class="w-full rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
-                      :class="navClass(isAnalytics)"
+                      :class="[
+                        baseButtonClass,
+                        primaryButtonClass,
+                        'w-full',
+                        navClass(isAnalytics),
+                      ]"
+                      variant="ghost"
+                      color="neutral"
                       icon="i-heroicons-chart-bar"
                       leading
                     >
@@ -90,8 +101,9 @@
                       <UButton
                         v-if="isAuthenticated"
                         to="/profile"
-                        variant="outline"
-                        class="rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                        :class="[baseButtonClass, primaryButtonClass]"
+                        variant="ghost"
+                        color="neutral"
                         icon="i-heroicons-user-circle"
                         leading
                       >
@@ -99,8 +111,9 @@
                       </UButton>
                       <UButton
                         v-if="isAuthenticated"
-                        variant="solid"
-                        class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                        :class="[baseButtonClass, dangerButtonClass]"
+                        variant="ghost"
+                        color="neutral"
                         icon="i-heroicons-arrow-right-on-rectangle"
                         :loading="logoutLoading"
                         leading
@@ -111,8 +124,9 @@
                       <UButton
                         v-else
                         to="/auth/login"
-                        variant="solid"
-                        class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                        :class="[baseButtonClass, primaryButtonClass]"
+                        variant="ghost"
+                        color="neutral"
                         icon="i-heroicons-arrow-right-on-rectangle"
                         leading
                       >
@@ -148,9 +162,14 @@
               <div class="flex flex-row items-center gap-2">
                 <UButton
                   to="/"
-                  variant="outline"
-                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
-                  :class="navClass(isHome)"
+                  :class="[
+                    baseButtonClass,
+                    primaryButtonClass,
+                    'flex-1',
+                    navClass(isHome),
+                  ]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-home"
                   leading
                 >
@@ -158,9 +177,14 @@
                 </UButton>
                 <UButton
                   to="/profile/analytics"
-                  variant="outline"
-                  class="rounded-full flex-1 border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
-                  :class="navClass(isAnalytics)"
+                  :class="[
+                    baseButtonClass,
+                    primaryButtonClass,
+                    'flex-1',
+                    navClass(isAnalytics),
+                  ]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-chart-bar"
                   leading
                 >
@@ -199,8 +223,9 @@
                   <UButton
                     v-if="isAuthenticated"
                     to="/profile"
-                    variant="outline"
-                    class="rounded-full border-sky-200 bg-white text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    :class="[baseButtonClass, primaryButtonClass]"
+                    variant="ghost"
+                    color="neutral"
                     icon="i-heroicons-user-circle"
                     leading
                   >
@@ -208,8 +233,9 @@
                   </UButton>
                   <UButton
                     v-if="isAuthenticated"
-                    variant="solid"
-                    class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    :class="[baseButtonClass, dangerButtonClass]"
+                    variant="ghost"
+                    color="neutral"
                     icon="i-heroicons-arrow-right-on-rectangle"
                     :loading="logoutLoading"
                     leading
@@ -220,8 +246,9 @@
                   <UButton
                     v-else
                     to="/auth/login"
-                    variant="solid"
-                    class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    :class="[baseButtonClass, primaryButtonClass]"
+                    variant="ghost"
+                    color="neutral"
                     icon="i-heroicons-arrow-right-on-rectangle"
                     leading
                   >
@@ -272,6 +299,17 @@ const mobileMenuOpen = ref(false);
 const confirmLogoutOpen = ref(false);
 const headerRefreshToken = useState<number>("header-refresh-token", () => 0);
 
+const bodyTextClass =
+  "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+
+const primaryButtonClass =
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
+
+const dangerButtonClass =
+  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
+
 const isHome = computed(() => route.path === "/");
 const isAnalytics = computed(
   () =>
@@ -306,7 +344,7 @@ const hotTasksBadgeClass = computed(() => {
 const navClass = (active: boolean) =>
   active
     ? "bg-sky-100 border-sky-300 shadow-[0_10px_20px_rgba(59,130,246,0.2)]"
-    : "hover:bg-sky-50";
+    : "";
 
 const fetchUser = async () => {
   try {

@@ -89,7 +89,9 @@
 
             <div class="flex flex-wrap items-center gap-2 xl:shrink-0">
               <UButton
-                class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, primaryButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-check-circle"
                 leading
                 :loading="isActionLoading(invite.id, 'accept')"
@@ -99,8 +101,9 @@
                 Принять
               </UButton>
               <UButton
-                variant="outline"
-                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, dangerButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-x-circle"
                 leading
                 :loading="isActionLoading(invite.id, 'decline')"
@@ -173,6 +176,17 @@ const loading = ref(false);
 const errorMessage = ref("");
 const actionLoadingId = ref<string | null>(null);
 const actionType = ref<"accept" | "decline" | null>(null);
+
+const bodyTextClass =
+  "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+
+const primaryButtonClass =
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
+
+const dangerButtonClass =
+  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
 
 const isActionLoading = (id: string, type: "accept" | "decline") =>
   actionLoadingId.value === id && actionType.value === type;

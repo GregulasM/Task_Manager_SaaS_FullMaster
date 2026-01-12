@@ -260,7 +260,9 @@
               class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <UButton
-                class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, primaryButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-arrow-right-circle"
                 leading
                 @click="openBoard"
@@ -269,8 +271,9 @@
               </UButton>
               <UButton
                 v-if="selectedGroup === 'my'"
-                variant="outline"
-                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, primaryButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-user-group"
                 leading
                 @click="toggleMembers(selectedProject.id)"
@@ -279,8 +282,9 @@
               </UButton>
               <UButton
                 v-if="selectedGroup === 'my'"
-                variant="outline"
-                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, dangerButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-trash"
                 leading
                 :loading="isActionLoading('leave')"
@@ -291,8 +295,9 @@
               </UButton>
               <UButton
                 v-else
-                variant="outline"
-                class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                :class="[baseButtonClass, primaryButtonClass]"
+                variant="ghost"
+                color="neutral"
                 icon="i-heroicons-user-plus"
                 leading
                 :loading="isActionLoading('request')"
@@ -340,8 +345,9 @@
                   Горящие: {{ boardHotTotal }}
                 </UBadge>
                 <UButton
-                  variant="outline"
-                  class="rounded-full border-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                  :class="[baseButtonClass, primaryButtonClass]"
+                  variant="ghost"
+                  color="neutral"
                   icon="i-heroicons-arrow-left"
                   leading
                   @click="closeBoard"
@@ -385,7 +391,9 @@
                     Создаем
                   </UBadge>
                   <UButton
-                    class="rounded-full bg-sky-200 text-slate-900 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12"
+                    :class="[baseButtonClass, primaryButtonClass]"
+                    variant="ghost"
+                    color="neutral"
                     icon="i-heroicons-plus"
                     leading
                     :loading="createLoading"
@@ -573,11 +581,11 @@
                         </p>
                       </div>
                       <UButton
+                        :class="[baseButtonClass, dangerButtonClass]"
                         variant="ghost"
                         color="neutral"
                         size="xs"
                         icon="i-heroicons-trash"
-                        class="rounded-full"
                         @click="confirmDeleteTask(task)"
                       />
                     </div>
@@ -952,6 +960,17 @@ const hotBadgeClass = (count: number) => {
   if (count <= 2) return "border-amber-200 bg-amber-100 text-amber-800";
   return "border-rose-200 bg-rose-100 text-rose-800";
 };
+
+const bodyTextClass =
+  "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+
+const primaryButtonClass =
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
+
+const dangerButtonClass =
+  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
 
 const inputUi = {
   base: "w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 focus:ring-2 focus:ring-sky-300",

@@ -103,10 +103,9 @@
           block
           :loading="loading"
           :disabled="isSubmitDisabled"
-          :class="[
-            'rounded-full bg-gradient-to-r from-sky-300 to-blue-400 font-bold text-slate-900 shadow-lg shadow-blue-200/60',
-            bodyTextClass,
-          ]"
+          :class="[baseButtonClass, primaryButtonClass]"
+          variant="ghost"
+          color="neutral"
           icon="i-heroicons-arrow-right-on-rectangle"
           leading
         >
@@ -158,6 +157,11 @@ const headingTextClass =
   "text-[7px] 4xs:text-[8px] 3xs:text-[9px] 2xs:text-[10px] xs:text-[11px] sm:text-sm md:text-md lg:text-md 2xl:text-lg 3xl:text-lg/6 4xl:text-2xl/8 5xl:text-3xl/10";
 const bodyTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+
+const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+
+const primaryButtonClass =
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
 
 const isSubmitDisabled = computed(
   () => loading.value || !form.email || !form.password,

@@ -23,11 +23,7 @@
           <div class="flex flex-col gap-2">
             <UButton
               to="/main"
-              :class="[
-                'rounded-full justify-center flex-1 hover:bg-blue-400 active:bg-blue-500 border px-6 py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5',
-                bodyTextClass,
-                tabIdleClass,
-              ]"
+              :class="[baseButtonClass, primaryButtonClass, 'justify-center']"
               variant="ghost"
               color="neutral"
               :active="false"
@@ -39,11 +35,7 @@
             <div class="flex flex-row gap-2">
               <UButton
                 to="/auth/login"
-                :class="[
-                  'rounded-full flex-1 hover:bg-blue-400 active:bg-blue-500 border px-6 py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5',
-                  bodyTextClass,
-                  tabClass(isLogin),
-                ]"
+                :class="[baseButtonClass, 'flex-1', tabClass(isLogin)]"
                 variant="ghost"
                 color="neutral"
                 :active="false"
@@ -54,11 +46,7 @@
               </UButton>
               <UButton
                 to="/auth/register"
-                :class="[
-                  'rounded-full flex-1 hover:bg-blue-400 active:bg-blue-500 border px-6 py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5',
-                  bodyTextClass,
-                  tabClass(isRegister),
-                ]"
+                :class="[baseButtonClass, 'flex-1', tabClass(isRegister)]"
                 variant="ghost"
                 color="neutral"
                 :active="false"
@@ -85,12 +73,19 @@ const route = useRoute();
 const bodyTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
 
-const isLogin = computed(() => route.path.endsWith("/login"));
-const isRegister = computed(() => route.path.endsWith("/register"));
+const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-blue-400 active:bg-blue-500 ${bodyTextClass}`;
+
+const primaryButtonClass =
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5";
 
 const tabActiveClass =
   "bg-sky-300 border-sky-300 shadow-lg shadow-sky-200/70 -translate-y-0.5";
+
 const tabIdleClass =
   "border-sky-200/60 bg-white border-sky-100 shadow-lg shadow-sky-100/70 -translate-y-0.5";
+
+const isLogin = computed(() => route.path.endsWith("/login"));
+const isRegister = computed(() => route.path.endsWith("/register"));
+
 const tabClass = (active: boolean) => (active ? tabActiveClass : tabIdleClass);
 </script>
