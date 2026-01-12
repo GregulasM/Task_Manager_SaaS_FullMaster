@@ -493,7 +493,7 @@
                 >
                   {{ membersError[selectedProject.id] }}
                 </div>
-                <div v-else class="h-12 space-y-1 overflow-y-auto pr-1">
+                <div v-else class="h-24 space-y-1 overflow-y-auto pr-1">
                   <div
                     v-if="
                       hasMembersLoaded(selectedProject.id) &&
@@ -1254,7 +1254,7 @@
                   >
                     {{ membersError[selectedProject.id] }}
                   </div>
-                  <div v-else class="h-12 space-y-1 overflow-y-auto pr-1">
+                  <div v-else class="h-24 space-y-1 overflow-y-auto pr-1">
                     <div
                       v-if="
                         hasMembersLoaded(selectedProject.id) &&
