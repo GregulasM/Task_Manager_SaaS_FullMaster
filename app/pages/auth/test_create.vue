@@ -51,7 +51,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="rounded-full bg-emerald-400 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300"
+            class="rounded-full bg-emerald-400 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300"
           >
             {{ loading ? "Sending..." : "Create test user" }}
           </button>

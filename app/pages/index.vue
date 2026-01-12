@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="flex flex-col gap-6 lg:flex-row lg:grid-cols-[320px,1fr]">
-      <aside class="space-y-4 lg:basis-2/8">
-        <div v-if="!isBoardOpen" class="lg:hidden">
+    <div class="flex flex-col gap-6 xl:flex-row xl:grid-cols-[320px,1fr]">
+      <aside class="space-y-4 xl:basis-2/8">
+        <div v-if="!isBoardOpen" class="xl:hidden">
           <div class="rounded-[28px] border border-sky-200 bg-white/90 p-4">
             <div class="flex items-center justify-between">
               <div class="space-y-1">
@@ -206,7 +206,7 @@
         </div>
 
         <UCard
-          class="hidden rounded-[28px] border border-sky-200 bg-white/90 lg:block"
+          class="hidden rounded-[28px] border border-sky-200 bg-white/90 xl:block"
           :ui="{
             root:
               'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
@@ -244,7 +244,7 @@
             :items="accordionItems"
             type="multiple"
             :default-value="['my', 'other']"
-            class="max-h-[60vh] space-y-4 overflow-y-auto pr-1"
+            class="max-h-[60vh] space-y-4 overflow-y-auto pr-1 cursor-pointer"
           >
             <template #leading="{ item }">
               <UIcon :name="item.icon" class="h-4 w-4 text-sky-600" />
@@ -269,7 +269,7 @@
                   :key="project.id"
                   variant="ghost"
                   block
-                  class="h-auto justify-between rounded-2xl border border-transparent px-3 py-3 text-left transition hover:border-sky-200 hover:bg-sky-50"
+                  class="h-auto cursor-pointer justify-between rounded-2xl border border-transparent px-3 py-3 text-left transition hover:border-sky-200 hover:bg-sky-50"
                   :class="projectButtonClass(project.id)"
                   @click="selectProject(project, 'my')"
                 >
@@ -327,7 +327,7 @@
                   :key="project.id"
                   variant="ghost"
                   block
-                  class="h-auto justify-between rounded-2xl border border-transparent px-3 py-3 text-left transition hover:border-sky-200 hover:bg-sky-50"
+                  class="h-auto cursor-pointer justify-between rounded-2xl border border-transparent px-3 py-3 text-left transition hover:border-sky-200 hover:bg-sky-50"
                   :class="projectButtonClass(project.id)"
                   @click="selectProject(project, 'other')"
                 >
@@ -370,8 +370,8 @@
       </aside>
 
       <section
-        class="basis-6/8 space-y-6 lg:flex-1 lg:min-w-0"
-        :class="{ 'hidden lg:block': !isBoardOpen }"
+        class="basis-6/8 space-y-6 xl:flex-1 xl:min-w-0"
+        :class="{ 'hidden xl:block': !isBoardOpen }"
       >
         <UAlert
           v-if="errorMessage"
@@ -383,10 +383,10 @@
         />
         <UCard
           v-if="selectedProject && !isBoardOpen"
-          class="rounded-lg border border-sky-200 bg-white/90 lg:min-h-[560px] lg:flex lg:flex-col"
+          class="rounded-lg border border-sky-200 bg-white/90 xl:min-h-[560px] xl:flex xl:flex-col"
           :ui="{
-            body: 'flex flex-col lg:flex-1',
-            footer: 'lg:mt-auto',
+            body: 'flex flex-col xl:flex-1',
+            footer: 'xl:mt-auto',
             root:
               'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
               'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
@@ -397,7 +397,7 @@
         >
           <template #header>
             <div
-              class="flex flex-col gap-2 sm:gap-4 lg:flex-row lg:items-center lg:justify-between"
+              class="flex flex-col gap-2 sm:gap-4 xl:flex-row xl:items-center xl:justify-between"
             >
               <div class="space-y-1 sm:space-y-2">
                 <p
@@ -414,13 +414,31 @@
 
               <div class="flex flex-wrap items-center gap-2">
                 <UBadge
+                  :class="
+                    canOpenProjectTasks
+                      ? 'cursor-pointer hover:border-sky-300 hover:bg-sky-50'
+                      : ''
+                  "
+                  :role="canOpenProjectTasks ? 'button' : undefined"
+                  :tabindex="canOpenProjectTasks ? 0 : undefined"
                   class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                  @click="handleDetailsTasksClick"
+                  @keydown.enter.prevent="handleDetailsTasksClick"
                 >
                   {{ selectedProject.tasksCount }} задач
                 </UBadge>
                 <UBadge
-                  :class="hotBadgeClass(selectedProject.hotTasksCount)"
+                  :class="[
+                    hotBadgeClass(selectedProject.hotTasksCount),
+                    canOpenProjectHot
+                      ? 'cursor-pointer hover:border-rose-300 hover:bg-rose-50'
+                      : '',
+                  ]"
+                  :role="canOpenProjectHot ? 'button' : undefined"
+                  :tabindex="canOpenProjectHot ? 0 : undefined"
                   class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                  @click="handleDetailsHotClick"
+                  @keydown.enter.prevent="handleDetailsHotClick"
                 >
                   Горящие: {{ selectedProject.hotTasksCount }} шт.
                 </UBadge>
@@ -453,6 +471,7 @@
             <UCollapsible
               v-if="openMembersId === selectedProject.id"
               :open="openMembersId === selectedProject.id"
+              class="cursor-pointer"
             >
               <div
                 class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3"
@@ -571,9 +590,9 @@
 
         <UCard
           v-else-if="selectedProject && isBoardOpen"
-          class="rounded-lg border border-sky-200 bg-white/90 lg:max-h-250 lg:flex lg:flex-col overflow-y-scroll"
+          class="rounded-lg border border-sky-200 bg-white/90 xl:max-h-280 xl:flex xl:flex-col overflow-y-scroll"
           :ui="{
-            body: 'flex flex-col lg:flex-1',
+            body: 'flex flex-col xl:flex-1',
             root:
               'p-0 bg-transparent shadow-none ring-0 rounded-none ' +
               'data-[state=open]:animate-[scale-in_100ms_ease-out] ' +
@@ -584,7 +603,7 @@
         >
           <template #header>
             <div
-              class="flex flex-col gap-2 sm:gap-4 lg:flex-row lg:items-center lg:justify-between"
+              class="flex flex-col gap-2 sm:gap-4 xl:flex-row xl:items-center xl:justify-between"
             >
               <div class="space-y-1 sm:space-y-2">
                 <p
@@ -644,7 +663,7 @@
                 v-model="createAccordionOpen"
                 collapsible
                 :unmount-on-hide="false"
-                class="space-y-3"
+                class="space-y-3 cursor-pointer"
               >
                 <template #default>
                   <div class="flex flex-col gap-1 sm:gap-2">
@@ -766,7 +785,7 @@
               </UAccordion>
             </div>
 
-            <div v-if="boardLoading" class="grid gap-4 lg:grid-cols-4">
+            <div v-if="boardLoading" class="grid gap-4 xl:grid-cols-4">
               <div
                 v-for="item in 4"
                 :key="item"
@@ -787,12 +806,12 @@
             <div
               v-else
               ref="boardScrollRef"
-              class="flex flex-1 gap-3 overflow-x-scroll pb-2 sm:gap-4"
+              class="flex 2xl:justify-around flex-1 gap-3 overflow-x-scroll pb-2 sm:gap-4"
             >
               <div
                 v-for="column in boardColumns"
                 :key="column.id"
-                class="flex min-h-[360px] max-h-[640px] w-64 shrink-0 flex-col overflow-y-scroll rounded-[28px] border border-sky-200 bg-white/80 p-3 sm:min-h-[420px] sm:max-h-[800px] sm:w-72 sm:p-4 md:w-80"
+                class="flex min-h-[360px] max-h-[640px] w-64 shrink-0 flex-col overflow-y-scroll rounded-[28px] border border-sky-200 bg-white/80 p-3 sm:min-h-[420px] sm:max-h-[800px] sm:w-72 sm:p-4 md:w-100"
                 @dragover.prevent="handleColumnDragOver(column.id, $event)"
                 @drop.prevent="handleDrop(column.id, 'end')"
               >
@@ -840,7 +859,7 @@
                         isHotTask(task, column.id) ? 'true' : undefined
                       "
                       data-task-card
-                      :draggable="!isTaskEditing(task.id)"
+                      draggable="true"
                       :hidden="isDraggingTask(task.id)"
                       @click="handleTaskClick(task, $event)"
                       @dragstart="handleDragStart($event, task)"
@@ -938,8 +957,9 @@
                               value-key="value"
                               label-key="label"
                               placeholder="—"
+                              size="xs"
                               class="w-full"
-                              :ui="selectUi"
+                              :ui="taskSelectUi"
                               @update:model-value="
                                 (value) => setTaskAssignee(task, value)
                               "
@@ -970,7 +990,7 @@
                             <button
                               v-else
                               type="button"
-                              class="rounded-full border border-sky-200 bg-white px-2 py-0.5 font-semibold text-slate-700"
+                              class="rounded-full border border-sky-200 bg-white px-2 py-0.5 font-semibold text-slate-700 cursor-pointer"
                               data-no-modal
                               title="Дедлайн"
                               @click="startEditing(task, 'dueDate')"
@@ -991,8 +1011,9 @@
                               :model-value="task.priority"
                               value-key="value"
                               label-key="label"
+                              size="xs"
                               class="w-full"
-                              :ui="selectUi"
+                              :ui="taskSelectUi"
                               @update:model-value="
                                 (value) => setTaskPriority(task, value)
                               "
@@ -1011,8 +1032,9 @@
                               :model-value="task.status"
                               value-key="value"
                               label-key="label"
+                              size="xs"
                               class="w-full"
-                              :ui="selectUi"
+                              :ui="taskSelectUi"
                               @update:model-value="
                                 (value) => setTaskStatus(task, value)
                               "
@@ -1040,7 +1062,7 @@
                         color="neutral"
                         icon="i-heroicons-folder-open"
                         aria-label="Открыть карточку"
-                        class="absolute bottom-2 right-2 h-7 w-7 rounded-full p-0 text-slate-500 transition hover:text-slate-900"
+                        class="absolute bottom-2 right-2 h-7 w-7 rounded-full p-0 text-slate-500 transition hover:text-sky-400 hover:bg-white/10 focus:bg-white/10 active:bg-white/10 cursor-pointer"
                         @click.stop="openTaskModal(task)"
                       />
                     </div>
@@ -1093,7 +1115,7 @@
     <UModal
       v-model:open="projectModalOpen"
       scrollable
-      class="lg:hidden overflow-y-auto"
+      class="xl:hidden overflow-y-auto"
       :ui="{
         content:
           'p-0 ring-0 bg-transparent shadow-none w-[94vw] ' +
@@ -1144,13 +1166,31 @@
 
                 <div class="flex flex-wrap items-center gap-2">
                   <UBadge
+                    :class="
+                      canOpenProjectTasks
+                        ? 'cursor-pointer hover:border-sky-300 hover:bg-sky-50'
+                        : ''
+                    "
+                    :role="canOpenProjectTasks ? 'button' : undefined"
+                    :tabindex="canOpenProjectTasks ? 0 : undefined"
                     class="rounded-full border border-sky-200 bg-white text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold text-slate-700"
+                    @click="handleDetailsTasksClick"
+                    @keydown.enter.prevent="handleDetailsTasksClick"
                   >
                     {{ selectedProject.tasksCount }} задач
                   </UBadge>
                   <UBadge
-                    :class="hotBadgeClass(selectedProject.hotTasksCount)"
+                    :class="[
+                      hotBadgeClass(selectedProject.hotTasksCount),
+                      canOpenProjectHot
+                        ? 'cursor-pointer hover:border-rose-300 hover:bg-rose-50'
+                        : '',
+                    ]"
+                    :role="canOpenProjectHot ? 'button' : undefined"
+                    :tabindex="canOpenProjectHot ? 0 : undefined"
                     class="rounded-full border text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold"
+                    @click="handleDetailsHotClick"
+                    @keydown.enter.prevent="handleDetailsHotClick"
                   >
                     Горящие: {{ selectedProject.hotTasksCount }} шт.
                   </UBadge>
@@ -1192,6 +1232,7 @@
               <UCollapsible
                 v-if="openMembersId === selectedProject.id"
                 :open="openMembersId === selectedProject.id"
+                class="cursor-pointer"
               >
                 <div
                   class="rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 px-4 py-3"
@@ -1742,13 +1783,46 @@ const openBoard = (options: { scrollToHot?: boolean } = {}) => {
   return true;
 };
 
+const canOpenProjectTasks = computed(
+  () =>
+    Boolean(selectedProject.value?.role) &&
+    (selectedProject.value?.tasksCount ?? 0) > 0,
+);
+
+const canOpenProjectHot = computed(
+  () =>
+    Boolean(selectedProject.value?.role) &&
+    (selectedProject.value?.hotTasksCount ?? 0) > 0,
+);
+
+const handleDetailsTasksClick = () => {
+  if (!canOpenProjectTasks.value) return;
+  const opened = openBoard();
+  if (opened && projectModalOpen.value) {
+    projectModalOpen.value = false;
+  }
+};
+
+const handleDetailsHotClick = () => {
+  if (!canOpenProjectHot.value) return;
+  const opened = openBoard({ scrollToHot: true });
+  if (opened && projectModalOpen.value) {
+    projectModalOpen.value = false;
+  }
+};
+
 const openProjectDetails = (project: ProjectCard, group: ProjectGroup) => {
   selectProject(project, group);
+  if (typeof window !== "undefined") {
+    const isDesktop = window.matchMedia("(min-width: 1280px)").matches;
+    projectModalOpen.value = !isDesktop;
+    return;
+  }
   projectModalOpen.value = true;
 };
 
 onMounted(() => {
-  const mediaQuery = window.matchMedia("(min-width: 1024px)");
+  const mediaQuery = window.matchMedia("(min-width: 1280px)");
   const handleChange = (event: MediaQueryListEvent) => {
     closeProjectModalOnDesktop(event.matches);
   };
@@ -1818,13 +1892,13 @@ const alertUi = {
   description: bodyTextClass,
 };
 
-const baseButtonClass = `rounded-full border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+const baseButtonClass = `rounded-full border cursor-pointer py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
 
 const primaryButtonClass =
-  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500 cursor-pointer";
 
 const dangerButtonClass =
-  "font-bold text-slate-900 border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
+  "font-bold text-slate-900 border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500 cursor-pointer";
 
 const inputUi = {
   base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
@@ -1836,6 +1910,15 @@ const textareaUi = {
 
 const selectUi = {
   base: `w-full bg-white/90 border border-sky-200 text-slate-900 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,
+};
+
+const taskSelectUi = {
+  base: `min-h-[24px] rounded-full border border-sky-200/70 bg-white/95 px-3 py-1 text-slate-700 shadow-sm cursor-pointer ${bodyTextClass}`,
+  content: "rounded-xl border border-sky-200 bg-white/95 shadow-lg",
+  viewport: "p-1.5",
+  item: "px-3 py-2 text-[11px] text-slate-700 rounded-md cursor-pointer transition-colors data-highlighted:bg-sky-400 data-highlighted:text-white hover:bg-sky-400 hover:text-white",
+  itemLabel: "truncate",
+  itemDescription: "text-slate-500",
 };
 
 const fieldUi = {

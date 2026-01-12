@@ -15,7 +15,7 @@ const subTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12 font-semibold";
 
 const btnClass =
-  "border-sky-200/60 bg-white border-sky-100 shadow-lg shadow-sky-100/70 -translate-y-0.5 rounded-full hover:bg-blue-400 active:bg-blue-500 border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
+  "border-sky-200/60 bg-white border-sky-100 shadow-lg shadow-sky-100/70 -translate-y-0.5 rounded-full hover:bg-blue-400 active:bg-blue-500 border py-2.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 cursor-pointer text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
 
 // Класс карточки с переливающимся градиентом
 const cardClass =
@@ -145,7 +145,7 @@ const scrollToSection = (sectionId: string) => {
               <!-- Кнопка влево -->
               <button
                 type="button"
-                class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-2 py-1 shadow-md transition hover:bg-sky-50 sm:left-3 sm:px-3 sm:py-1.5"
+                class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-2 py-1 shadow-md transition hover:bg-sky-50 cursor-pointer sm:left-3 sm:px-3 sm:py-1.5"
                 aria-label="Назад"
               >
                 <span :class="textClass" class="text-slate-600">←</span>
@@ -154,7 +154,7 @@ const scrollToSection = (sectionId: string) => {
               <!-- Кнопка вправо -->
               <button
                 type="button"
-                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-2 py-1 shadow-md transition hover:bg-sky-50 sm:right-3 sm:px-3 sm:py-1.5"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-2 py-1 shadow-md transition hover:bg-sky-50 cursor-pointer sm:right-3 sm:px-3 sm:py-1.5"
                 aria-label="Вперед"
               >
                 <span :class="textClass" class="text-slate-600">→</span>

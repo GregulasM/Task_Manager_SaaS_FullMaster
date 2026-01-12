@@ -256,6 +256,7 @@
           <UCollapsible
             v-if="openMembersId === project.id"
             :open="openMembersId === project.id"
+            class="cursor-pointer"
           >
             <div
               class="mt-3 rounded-2xl border border-dashed border-sky-200 bg-sky-50/60 p-3"
@@ -489,13 +490,13 @@ const form = reactive({
 const bodyTextClass =
   "text-[5px] 4xs:text-[6px] 3xs:text-[7px] 2xs:text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs lg:text-sm 2xl:text-base 3xl:text-lg/8 4xl:text-2xl/10 5xl:text-3xl/12";
 
-const baseButtonClass = `rounded-full border px-3 py-1.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 ${bodyTextClass}`;
+const baseButtonClass = `rounded-full border px-3 py-1.5 font-bold text-slate-900 transition duration-200 ease-out hover:-translate-y-0.5 cursor-pointer ${bodyTextClass}`;
 
 const primaryButtonClass =
-  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500";
+  "border-sky-200/60 border-sky-100 bg-white shadow-lg shadow-sky-100/70 -translate-y-0.5 hover:bg-blue-400 active:bg-blue-500 cursor-pointer";
 
 const dangerButtonClass =
-  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500";
+  "border-pink-200/60 border-pink-100 bg-white shadow-lg shadow-pink-100/70 -translate-y-0.5 hover:bg-rose-400 active:bg-rose-500 cursor-pointer";
 
 const inputUi = {
   base: `w-full bg-white/90 border border-sky-200 text-slate-900 placeholder:text-slate-900/50 focus:border-sky-400 ring-0 ring-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-transparent ${bodyTextClass}`,

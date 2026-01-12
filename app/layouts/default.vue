@@ -68,7 +68,7 @@
           <!-- Badge горящих задач -->
           <UBadge
             :class="hotTasksBadgeClass"
-            class="hidden rounded-full border px-2 py-1 font-semibold xs:flex md:px-3"
+            class="not-2xs:hidden rounded-full border px-2 py-1 font-semibold xs:flex md:px-3"
             :ui="{ base: textClass }"
           >
             🔥 {{ hotTasks }}
@@ -186,7 +186,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full px-4 pb-6 sm:px-8 sm:pb-8">
+    <footer class="w-full px-4 pb-1 sm:px-8 sm:pb-2">
       <p :class="textClass" class="text-center text-slate-500">
         {{ new Date().getFullYear() }} FullMaster
       </p>
